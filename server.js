@@ -8,6 +8,16 @@ const morgan = require('morgan')
 const port = process.env.PORT || 8080;
 
 const dev = app.get('env') !== 'production';
+const report = require('./Models/UserReport.js');
+const workout = require('./Models/WorkoutReport');
+const mongoose = require('mongoose');
+const db = config.get('mongoURI');
+
+// Connects to the database collection
+mongoose
+.connect(db, {useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false})
+.then(() => console.log('MongoDB Connected...'))
+.catch(err => console.lof(err));
 
 if (!dev) {
     app.disable('x-powered-by');
