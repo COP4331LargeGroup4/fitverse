@@ -4,14 +4,14 @@ const app = express();
 const path = require('path');
 const compression = require('compression');
 const morgan = require('morgan')
-
-const port = process.env.PORT || 8080;
-
-const dev = app.get('env') !== 'production';
 const report = require('./Models/UserReport.js');
 const workout = require('./Models/WorkoutReport');
+const config = require('config');
 const mongoose = require('mongoose');
 const db = config.get('mongoURI');
+
+const port = process.env.PORT || 8080;
+const dev = app.get('env') !== 'production';
 
 // Connects to the database collection
 mongoose

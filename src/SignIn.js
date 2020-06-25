@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import { NavLink } from 'react-router-dom';
 
 function Copyright() {
   return (
@@ -44,6 +45,11 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  links: {
+    '&:hover': {
+      textDecoration: "underline"
+    }
+  }
 }));
 
 export default function SignIn() {
@@ -97,14 +103,14 @@ export default function SignIn() {
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href="resetpassword" variant="body2">
+              <NavLink exact to="/resetpassword" variant="body2" className={classes.links}>
                 Forgot password?
-              </Link>
+              </NavLink>
             </Grid>
             <Grid item>
-              <Link href="singup" variant="body2">
+              <NavLink exact to="/signup" variant="body2" className={classes.links} > 
                 {"Don't have an account? Sign Up"}
-              </Link>
+              </NavLink>
             </Grid>
           </Grid>
         </form>
