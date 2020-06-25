@@ -2,10 +2,9 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import 'semantic-ui-css/semantic.min.css'
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import { HomepageLayout } from './Home';
 import { LoginForm } from './Login'
-import { Redirect } from 'react-router-dom/cjs/react-router-dom.min';
 
 function App() {
   return (
