@@ -8,6 +8,7 @@ import { HomepageLayout } from './Home';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
 import Dashboard from './Dashboard';
+import ResetPassword from './ResetPassword';
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
         <Route exact path='/' component={() => <HomepageLayout />} />
         <Route exact path='/signin' component={() => <SignIn />} />
         <Route exact path='/signup' component={() => <SignUp />} />
-        <Route exact path='/resetpassword' component={() => <SignUp />} />
+        <Route exact path='/resetpassword' component={() => <ResetPassword />} />
         <Route exact path='/dashboard' component={() => <Dashboard />} />
 
         {/* Keep this Route last */}

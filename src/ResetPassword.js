@@ -12,6 +12,9 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import {Img} from 'react-image';
+import Logo from "./logo.svg";
+import { NavLink } from 'react-router-dom'
 
 function Copyright() {
   return (
@@ -46,13 +49,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn() {
+export default function ResetPassword() {
   const classes = useStyles();
 
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
+        <NavLink exact to="/">
+          <Img src={Logo} width="300"/>
+        </NavLink>
+
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
@@ -97,7 +104,7 @@ export default function SignIn() {
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2">
+              <Link href="resetpassword" variant="body2">
                 Forgot password?
               </Link>
             </Grid>
