@@ -2,69 +2,37 @@ import React from 'react';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import PeopleIcon from '@material-ui/icons/People';
-import BarChartIcon from '@material-ui/icons/BarChart';
-import LayersIcon from '@material-ui/icons/Layers';
-import AssignmentIcon from '@material-ui/icons/Assignment';
+import HomeIcon from '@material-ui/icons/Home'; //Daniela
+import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
+import PersonIcon from '@material-ui/icons/Person';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import { NavLink } from 'react-router-dom'
 
 export const mainListItems = (
   <div>
-    <ListItem button>
+    <ListItem button component={NavLink} exact path to='/dashboard' activeClassName="Mui-selected">
       <ListItemIcon>
-        <DashboardIcon />
+        <HomeIcon />
       </ListItemIcon>
-      <ListItemText primary="Dashboard" />
+      <ListItemText primary="Home" />
     </ListItem>
-    <ListItem button>
+    <ListItem button component={NavLink} exact path to='/calendar' activeClassName="Mui-selected">
       <ListItemIcon>
-        <ShoppingCartIcon />
+        <CalendarTodayIcon />
       </ListItemIcon>
-      <ListItemText primary="Orders" />
+      <ListItemText primary="Calendar" />
     </ListItem>
-    <ListItem button>
+    <ListItem button component={NavLink} exact path to='/profile' activeClassName="Mui-selected">
       <ListItemIcon>
-        <PeopleIcon />
+        <PersonIcon />
       </ListItemIcon>
-      <ListItemText primary="Customers" />
+      <ListItemText primary="Profile" />
     </ListItem>
-    <ListItem button>
+    <ListItem button component={NavLink} exact path to='/' activeClassName="Mui-selected">
       <ListItemIcon>
-        <BarChartIcon />
+        <ExitToAppIcon />
       </ListItemIcon>
-      <ListItemText primary="Reports" />
-    </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <LayersIcon />
-      </ListItemIcon>
-      <ListItemText primary="Integrations" />
-    </ListItem>
-  </div>
-);
-
-export const secondaryListItems = (
-  <div>
-    <ListSubheader inset>Saved reports</ListSubheader>
-    <ListItem button>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Current month" />
-    </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Last quarter" />
-    </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Year-end sale" />
+      <ListItemText primary="Log Out" />
     </ListItem>
   </div>
 );
