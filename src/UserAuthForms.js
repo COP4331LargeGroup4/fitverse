@@ -20,9 +20,9 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
+      <NavLink exact to="/" color="inherit">
+        Fitverse
+      </NavLink>{' '}
       {new Date().getFullYear()}
       {'.'}
     </Typography>
@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignUp() {
+export function SignUp() {
   const classes = useStyles();
 
   return (
@@ -139,3 +139,123 @@ export default function SignUp() {
     </div>
   );
 }
+
+export function SignIn() {
+    const classes = useStyles();
+  
+    return (
+        <div style={{backgroundColor:'#D9DBF1', height:'100vh', paddingTop:48}}>
+        <Container component="main" maxWidth="xs" justify="center" style={{backgroundColor:'#FFFFFF', padding:24, borderRadius:24, marginTop:48, border:'3px solid #ACB0BD'}}>
+        <CssBaseline />
+        <div className={classes.paper}>
+          <NavLink exact to="/">
+            <Img src={Logo} style={ {maxWidth: "100%"}}/>
+          </NavLink>
+          <Typography component="h1" variant="h5" style={{marginTop:20}}>
+            Sign in
+          </Typography>
+          <form className={classes.form} noValidate>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+            />
+            <FormControlLabel
+              control={<Checkbox value="remember" color="primary" />}
+              label="Remember me"
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+            >
+              Sign In
+            </Button>
+            <Grid container>
+              <Grid item xs>
+                <NavLink exact to="resetpassword" variant="body2">
+                  Forgot password?
+                </NavLink>
+              </Grid>
+              <Grid item>
+                <NavLink exact to="signup" variant="body2">
+                  {"Don't have an account? Sign Up"}
+                </NavLink>
+              </Grid>
+            </Grid>
+          </form>
+        </div>
+        <Box mt={8}>
+          <Copyright />
+        </Box>
+      </Container>
+      </div>
+    );
+  }
+
+  export function ResetPassword() {
+    const classes = useStyles();
+  
+    return (
+        <div style={{backgroundColor:'#D9DBF1', height:'100vh', paddingTop:48}}>
+        <Container component="main" maxWidth="xs" justify="center" style={{backgroundColor:'#FFFFFF', padding:24, borderRadius:24, marginTop:48, border:'3px solid #ACB0BD'}}>
+        <CssBaseline />
+        <div className={classes.paper}>
+          <NavLink exact to="/">
+            <Img src={Logo} style={ {maxWidth: "100%"}}/>
+          </NavLink>
+          <Typography component="h1" variant="h5" style={{marginTop:20}}>
+            Forgot your password?
+          </Typography>
+          <Typography component="subtitle1">
+            Enter your email to reset it
+          </Typography>
+          <form className={classes.form} noValidate>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+            >
+              Send password reset email
+            </Button>
+          </form>
+        </div>
+        <Box mt={8}>
+          <Copyright />
+        </Box>
+      </Container>
+      </div>
+    );
+  }

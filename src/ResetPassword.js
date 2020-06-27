@@ -15,6 +15,7 @@ import Container from '@material-ui/core/Container';
 import {Img} from 'react-image';
 import Logo from "./logo.svg";
 import { NavLink } from 'react-router-dom'
+import { TablePagination } from '@material-ui/core';
 
 function Copyright() {
   return (
@@ -57,14 +58,13 @@ export default function ResetPassword() {
       <CssBaseline />
       <div className={classes.paper}>
         <NavLink exact to="/">
-          <Img src={Logo} width="300"/>
+          <Img src={Logo} style={ {maxWidth: "100%"}}/>
         </NavLink>
-
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign in
+        <Typography component="h1" variant="h5" style={{marginTop:20}}>
+          Forgot your password?
+        </Typography>
+        <Typography component="subtitle1">
+          Enter your email to reset it
         </Typography>
         <form className={classes.form} noValidate>
           <TextField
@@ -78,21 +78,6 @@ export default function ResetPassword() {
             autoComplete="email"
             autoFocus
           />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
           <Button
             type="submit"
             fullWidth
@@ -100,20 +85,8 @@ export default function ResetPassword() {
             color="primary"
             className={classes.submit}
           >
-            Sign In
+            Send password reset email
           </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link href="resetpassword" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link href="singup" variant="body2">
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid>
         </form>
       </div>
       <Box mt={8}>

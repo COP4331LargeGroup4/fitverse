@@ -12,6 +12,9 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import {Img} from 'react-image';
+import Logo from "./logo.svg";
+import { NavLink } from 'react-router-dom'
 
 function Copyright() {
   return (
@@ -53,10 +56,10 @@ export default function SignIn() {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
+        <NavLink exact to="/">
+          <Img src={Logo} style={ {maxWidth: "100%"}}/>
+        </NavLink>
+        <Typography component="h1" variant="h5" style={{marginTop:20}}>
           Sign in
         </Typography>
         <form className={classes.form} noValidate>
@@ -97,14 +100,14 @@ export default function SignIn() {
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href="resetpassword" variant="body2">
+              <NavLink exact to="resetpassword" variant="body2">
                 Forgot password?
-              </Link>
+              </NavLink>
             </Grid>
             <Grid item>
-              <Link href="singup" variant="body2">
+              <NavLink exact to="signup" variant="body2">
                 {"Don't have an account? Sign Up"}
-              </Link>
+              </NavLink>
             </Grid>
           </Grid>
         </form>
