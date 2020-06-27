@@ -22,7 +22,7 @@ const pages = {
 		path: "/calendar",
 		page: <Calendar />
 	},
-	Profile: {
+	profile: {
 		title: "Profile",
 		path: "/profile",
 		page: <Profile />
@@ -37,7 +37,6 @@ function App() {
 				<Route exact path='/signin' component={() => <SignIn />} />
 				<Route exact path='/signup' component={() => <SignUp />} />
 				<Route exact path='/resetpassword' component={() => <ResetPassword />} />
-				<Route exact path='/dashboard' component={() => <Dashboard />} />
 				<Route exact path='/terms' component={() => <Terms />} />
 				<Route exact path='/privacy' component={() => <PrivacyPolicy />} />
 
