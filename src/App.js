@@ -4,11 +4,9 @@ import './App.css';
 import 'semantic-ui-css/semantic.min.css'
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import { HomepageLayout } from './Home';
-//import { LoginForm } from './Login'
-import {SignIn, SignUp} from './UserAuthForms';
+import {SignIn, SignUp, ResetPassword} from './UserAuthForms';
 import Dashboard from './Dashboard';
-import ResetPassword from './ResetPassword';
-import Terms from './Terrms';
+import Terms from './Terms';
 import PrivacyPolicy from './PrivacyPolicy';
 
 function App() {
