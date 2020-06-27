@@ -10,14 +10,15 @@ import Chart from './Chart';
 import Deposits from './Deposits';
 import Orders from './Orders';
 import {useStyles} from './Navigation'
+import { NavLink } from 'react-router-dom'
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
+      <NavLink exact to="/" color="inherit">
+			  Fitverse
+		  </NavLink>{' '}
       {new Date().getFullYear()}
       {'.'}
     </Typography>
