@@ -12,7 +12,6 @@ import Container from '@material-ui/core/Container';
 import { Img } from 'react-image';
 import Logo from "./logo.svg";
 import { NavLink } from 'react-router-dom';
-import { EmailValidator } from 'email-validator';
 import { Formik, Form, Field } from 'formik';
 import { LinearProgress } from '@material-ui/core';
 import { TextField } from 'formik-material-ui';
