@@ -8,28 +8,32 @@ import PersonIcon from '@material-ui/icons/Person';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { NavLink } from 'react-router-dom'
 
+const itemStyle = {
+  color: 'white'
+}
+
 export const mainListItems = (
   <div>
-    <ListItem button component={NavLink} exact path to='/dashboard' activeClassName="Mui-selected">
-      <ListItemIcon>
+    <ListItem button component={NavLink} exact path to='/dashboard' style={itemStyle}>
+      <ListItemIcon style={itemStyle}>
         <HomeIcon />
       </ListItemIcon>
       <ListItemText primary="Home" />
     </ListItem>
-    <ListItem button component={NavLink} exact path to='/calendar' activeClassName="Mui-selected">
-      <ListItemIcon>
+    <ListItem button component={NavLink} exact path to='/calendar' style={itemStyle}>
+      <ListItemIcon style={itemStyle}>
         <CalendarTodayIcon />
       </ListItemIcon>
       <ListItemText primary="Calendar" />
     </ListItem>
-    <ListItem button component={NavLink} exact path to='/profile' activeClassName="Mui-selected">
-      <ListItemIcon>
+    <ListItem button component={NavLink} exact path to='/profile' style={itemStyle}>
+      <ListItemIcon style={itemStyle}>
         <PersonIcon />
       </ListItemIcon>
       <ListItemText primary="Profile" />
     </ListItem>
-    <ListItem button component={NavLink} exact path to='/' activeClassName="Mui-selected">
-      <ListItemIcon>
+    <ListItem button component={NavLink} exact path to='/' style={{color: '#990000'}}>
+      <ListItemIcon style={{color: '#990000'}}>
         <ExitToAppIcon />
       </ListItemIcon>
       <ListItemText primary="Log Out" />
