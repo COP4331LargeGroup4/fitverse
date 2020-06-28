@@ -7,7 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Link from '@material-ui/core/Link';
 import Chart from './Chart';
-import Deposits from './Deposits';
+import ButtonComponent from './ButtonComponent';
 import Orders from './Orders';
 import {useStyles} from './Navigation'
 import { NavLink } from 'react-router-dom'
@@ -44,7 +44,7 @@ export function Dashboard() {
             {/* Recent Deposits */}
             <Grid item xs={12} md={5} lg={6}>
               <Paper className={fixedHeightPaper}>
-                <Deposits />
+                <ButtonComponent />
               </Paper>
             </Grid>
             {/* Recent Orders */}

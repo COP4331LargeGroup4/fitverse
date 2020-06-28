@@ -35,7 +35,7 @@ const pages = {
 		page: <Goals />
 	},
 	workouts: {
-		title: "Add a Workout",
+		title: "Create a Workout",
 		path: "/workouts",
 		page: <Workouts />
 	}
