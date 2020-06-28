@@ -12,11 +12,11 @@ import Container from '@material-ui/core/Container';
 import { Img } from 'react-image';
 import Logo from "./logo.svg";
 import { NavLink } from 'react-router-dom';
-import { Formik, Form, Field } from 'formik';
-import { LinearProgress } from '@material-ui/core';
-import { TextField } from 'formik-material-ui';
+import { Formik, Form, Field, useField } from 'formik';
+import { TextField, CheckboxWithLabel } from 'formik-material-ui';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { green } from '@material-ui/core/colors';
+import * as Yup from 'yup';
+import { FormHelperText } from '@material-ui/core';
 
 function Copyright() {
 	return (
@@ -141,112 +141,14 @@ export function ResetPassword() {
 	);
 }
 
-
-
-/*<Formik
-						initialValues={{
-							email: '',
-						}}
-						validate={values => {
-							const errors: Partial<Values> = {};
-							if (!values.email) {
-								errors.email = 'Required';
-							} else if (!EmailValidator.validate(values.email)) {
-								errors.email = 'Invalid email address';
-							}
-							return errors;
-						}}
-						onSubmit={(values, { setSubmitting }) => {
-							setTimeout(() => {
-								setSubmitting(false);
-								alert(values);
-							}, 500);
-						}}
-					>
-						{({ submitForm, isSubmitting }) => (
-							<Form>
-
-								<Field
-									component={TextField}
-									name="email"
-									type="email"
-									label="Email"
-									required
-									fullWidth
-									variant="outlined"
-									margin="normal"
-								/>
-								{isSubmitting}
-								<Button
-									type="submit"
-									fullWidth
-									variant="contained"
-									color="primary"
-									className={classes.submit}
-								>
-									Send password reset email
-								</Button>
-							</Form>
-						)}
-					</Formik>*/
-
-
-
-/*export function ResetPassword() {
-	const classes = useStyles();
-
-	return (
-		<div style={{ backgroundColor: '#D9DBF1', height: '100vh', paddingTop: 48 }}>
-			<Container component="main" maxWidth="xs" justify="center" style={{ backgroundColor: '#FFFFFF', padding: 24, borderRadius: 24, marginTop: 48, border: '3px solid #ACB0BD' }}>
-				<CssBaseline />
-				<div className={classes.paper}>
-					<NavLink exact to="/">
-						<Img src={Logo} style={{ maxWidth: "100%" }} />
-					</NavLink>
-					<Typography component="h1" variant="h5" style={{ marginTop: 20 }}>
-						Forgot your password?
-					</Typography>
-					<Typography component="subtitle1">
-						Enter your email to reset it
-					</Typography>
-					<form className={classes.form} noValidate>
-						<TextField
-							variant="outlined"
-							margin="normal"
-							required
-							fullWidth
-							id="email"
-							label="Email Address"
-							name="email"
-							autoComplete="email"
-							autoFocus
-						/>
-						<Button
-							type="submit"
-							fullWidth
-							variant="contained"
-							color="primary"
-							className={classes.submit}
-						>
-							Send password reset email
-						</Button>
-					</form>
-				</div>
-				<Box mt={8}>
-					<Copyright />
-				</Box>
-			</Container>
-		</div>
-	);
-}*/
-
-
-
-
-
+/*<FormControlLabel
+										control={<Checkbox value="agree" color="primary" />}
+										label={<div>I agree to the <NavLink exact to="terms">terms</NavLink> and <NavLink exact to="privacy">privacy policy</NavLink></div>}
+									/>*/
 
 export function SignUp() {
 	const classes = useStyles();
+	//const agreeError = getFieldMeta('agree').error;
 
 	return (
 		<div style={{ backgroundColor: '#D9DBF1', height: '100vh', paddingTop: 48 }}>
@@ -259,78 +161,133 @@ export function SignUp() {
 					<Typography component="h1" variant="h5" style={{ marginTop: 20 }}>
 						Sign up
 					</Typography>
-					<form className={classes.form} noValidate>
-						<Grid container spacing={2}>
-							<Grid item xs={12} sm={6}>
-								<TextField
-									autoComplete="fname"
-									name="firstName"
-									variant="outlined"
-									required
-									fullWidth
-									id="firstName"
-									label="First Name"
-									autoFocus
-								/>
+
+					<Formik
+						initialValues={{
+							firstname: '',
+							lastname: '',
+							email: '',
+							password: '',
+							agree: false
+						}}
+						validationSchema={Yup.object({
+							firstname: Yup.string("Enter your firstname")
+							.required("First Name is Required"),
+							lastname: Yup.string("Enter your lastname")
+							.required("Last Name is Required"),
+							email: Yup.string("Enter your email")
+							.email("Enter valid email")
+							.required("Email is required"),
+							password: Yup.string("Enter your password")
+							.min(8, "Password must contain at least 8 character")
+							.required("Password is required"),
+							agree: Yup.bool()
+							.oneOf([true], "You must agree to continue")
+						})}
+
+						
+						onSubmit={(values, { setSubmitting }) => {
+							
+							setTimeout(() => {
+								setSubmitting(false);
+								alert(JSON.stringify(values, null, 2));
+							}, 500);
+						}}
+					>
+						{({ submitForm, isSubmitting, errors, status, touched }) => (
+							<form className={classes.form}>
+							<Grid container spacing={2}>
+								<Grid item xs={12} sm={6}>
+									<Field
+										component={TextField}
+										name="firstname"
+										type="firstname"
+										label="First Name"
+										required
+										fullWidth
+										variant="outlined"
+										margin="normal"
+										disabled={isSubmitting}
+										helperText={touched.firstname ? errors.firstname : ""}
+										error={touched.firstname && Boolean(errors.firstname)}
+									/>
+								</Grid>
+								<Grid item xs={12} sm={6}>
+									<Field
+										component={TextField}
+										name="lastname"
+										type="lastname"
+										label="Last Name"
+										required
+										fullWidth
+										variant="outlined"
+										margin="normal"
+										disabled={isSubmitting}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<Field
+										component={TextField}
+										name="email"
+										type="email"
+										label="Email Address"
+										required
+										fullWidth
+										variant="outlined"
+										margin="normal"
+										disabled={isSubmitting}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<Field
+										component={TextField}
+										name="password"
+										type="password"
+										label="Password"
+										required
+										fullWidth
+										variant="outlined"
+										margin="normal"
+										disabled={isSubmitting}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<Field
+										component={CheckboxWithLabel}
+										name="agree"
+										type="checkbox"
+										Label={{label:(<div>I agree to the <NavLink exact to="terms">terms</NavLink> and <NavLink exact to="privacy">privacy policy</NavLink></div>)}}
+										required
+										margin="normal"
+										disabled={isSubmitting}
+									/>
+									{errors.agree && touched.agree ? <FormHelperText error>{errors.agree}</FormHelperText>:null}
+																		
+								</Grid>
 							</Grid>
-							<Grid item xs={12} sm={6}>
-								<TextField
-									variant="outlined"
-									required
-									fullWidth
-									id="lastName"
-									label="Last Name"
-									name="lastName"
-									autoComplete="lname"
-								/>
+							<Button
+								fullWidth
+								variant="contained"
+								color="primary"
+								disabled={isSubmitting}
+								onClick={submitForm}
+								className={classes.submit}
+							>
+								Sign Up
+								{isSubmitting && <CircularProgress size={12} className={classes.buttonProgress} />}
+							</Button>
+							<Grid container justify="flex-end">
+								<Grid item>
+									<NavLink exact to="signin" variant="body2">
+										Already have an account? Sign in
+									</NavLink>
+								</Grid>
 							</Grid>
-							<Grid item xs={12}>
-								<TextField
-									variant="outlined"
-									required
-									fullWidth
-									id="email"
-									label="Email Address"
-									name="email"
-									autoComplete="email"
-								/>
-							</Grid>
-							<Grid item xs={12}>
-								<TextField
-									variant="outlined"
-									required
-									fullWidth
-									name="password"
-									label="Password"
-									type="password"
-									id="password"
-									autoComplete="current-password"
-								/>
-							</Grid>
-							<Grid item xs={12}>
-								<FormControlLabel
-									control={<Checkbox value="agree" color="primary" />}
-									label={<div>I agree to the <NavLink exact to="terms">terms</NavLink> and <NavLink exact to="privacy">privacy policy</NavLink></div>}
-								/>
-							</Grid>
-						</Grid>
-						<Button
-							type="submit"
-							fullWidth
-							variant="contained"
-							color="primary"
-							className={classes.submit}
-						>
-							Sign Up
-						</Button>
-						<Grid container justify="flex-end">
-							<Grid item>
-								<NavLink exact to="signin" variant="body2">
-									Already have an account? Sign in
-								</NavLink>
-							</Grid>
-						</Grid>
-					</form>
+						</form>
+						)}
+					</Formik>
+
+					
 				</div>
 				<Box mt={5}>
 					<Copyright />
