@@ -14,25 +14,25 @@ const itemStyle = {
 
 export const mainListItems = (
   <div>
-    <ListItem button component={NavLink} exact path to='/dashboard' style={itemStyle}>
+    <ListItem button component={NavLink} exact path to='/dashboard' style={itemStyle} activeClassName="Mui-selected">
       <ListItemIcon style={itemStyle}>
         <HomeIcon />
       </ListItemIcon>
       <ListItemText primary="Home" />
     </ListItem>
-    <ListItem button component={NavLink} exact path to='/calendar' style={itemStyle}>
+    <ListItem button component={NavLink} exact path to='/calendar' style={itemStyle} activeClassName="Mui-selected">
       <ListItemIcon style={itemStyle}>
         <CalendarTodayIcon />
       </ListItemIcon>
       <ListItemText primary="Calendar" />
     </ListItem>
-    <ListItem button component={NavLink} exact path to='/profile' style={itemStyle}>
+    <ListItem button component={NavLink} exact path to='/profile' style={itemStyle} activeClassName="Mui-selected">
       <ListItemIcon style={itemStyle}>
         <PersonIcon />
       </ListItemIcon>
       <ListItemText primary="Profile" />
     </ListItem>
-    <ListItem button component={NavLink} exact path to='/' style={{color: '#990000'}}>
+    <ListItem button component={NavLink} exact path to='/' style={{color: '#990000'}} activeClassName="Mui-selected">
       <ListItemIcon style={{color: '#990000'}}>
         <ExitToAppIcon />
       </ListItemIcon>
