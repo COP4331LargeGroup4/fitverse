@@ -3,10 +3,10 @@ const Schema = mongoose.Schema;
 
 const WorkoutSchema = new Schema({
     Workout: {
-            Day_of_week: Array,
-            Sets: Number,
-            Reps: Number,
-            Time: Number,
+            Name: String,
+            Month: Number,
+            Day: Number,
+            TimeOfDay: String,
             Complete: Boolean
             }
 })
