@@ -1,11 +1,8 @@
 import React from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import Title from './Title';
 import { Button } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import { green, purple } from '@material-ui/core/colors';
 import { NavLink } from 'react-router-dom'
 
 function preventDefault(event) {
@@ -34,7 +31,7 @@ export default function Deposits() {
             </Grid>
             {/* Recent Orders */}
             <Grid item lg={6}>
-            <Button size="large" variant="contained" color="primary"  style={{backgroundColor: '#416164'}}>Add Workout</Button>
+            <Button size="large" variant="contained" color="primary"  style={{backgroundColor: '#416164'}} component={NavLink} exact path to='/workouts'>Add Workout</Button>
             </Grid>
             <Grid item lg={6}>
             <Button size="large" variant="contained" color="primary"  style={{backgroundColor: '#416164'}}>View / Edit Workouts</Button>
