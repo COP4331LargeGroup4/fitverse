@@ -10,6 +10,27 @@ const Workout = require('../../Models/WorkoutReport.js');
 router.get('/', (req, res) => {
     Workout.find()
       .sort({ Name: -1})
-      .then(WorkoutReport => res.json(WorkoutReport))
+      .then(workouts => res.json(workouts))
 });
+
+// Need to fix ***
+
+// route POST api/workouts
+// description: Create a POST
+// access: Public
+router.post('/', (req, res) => {
+    const WorkoutNew = new Workout({
+        Name: req.body.Name
+    })
+    
+    router.post('/', (req, res) => {
+    const WorkoutNew = new Workout({
+        Month: req.body.Month
+    })
+    
+// Need to fix ***
+      
+    WorkoutNew.save().then(workouts => res.json(workouts));
+});
+
 module.exports = router;
