@@ -6,6 +6,7 @@ import { Button } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import { green, purple } from '@material-ui/core/colors';
+import { NavLink } from 'react-router-dom'
 
 function preventDefault(event) {
   event.preventDefault();
@@ -25,7 +26,7 @@ export default function Deposits() {
       <Grid container spacing={3}>
             {/* Chart */}
             <Grid item lg={6}>
-            <Button size="large" variant="contained" color="primary"  style={{backgroundColor: '#416164'}} block>My Goals</Button>
+            <Button size="large" variant="contained" color="primary"  style={{backgroundColor: '#416164'}} component={NavLink} exact path to='/goals'>My Goals</Button>
             </Grid>
             {/* Recent Deposits */}
             <Grid item lg={6}>

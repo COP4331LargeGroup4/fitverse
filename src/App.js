@@ -7,6 +7,7 @@ import Dashboard from './Dashboard';
 import InteriorLayout from './InteriorLayout'
 import Calendar from './Calendar';
 import Profile from './Profile'
+import Goals from './Goals'
 import { SignIn, SignUp, ResetPassword } from './UserAuthForms';
 import Terms from './Terms';
 import PrivacyPolicy from './PrivacyPolicy';
@@ -26,6 +27,11 @@ const pages = {
 		title: "Profile",
 		path: "/profile",
 		page: <Profile />
+	},
+	goals: {
+		title: "Goals",
+		path: "/goals",
+		page: <Goals />
 	}
 }
 
