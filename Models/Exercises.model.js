@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 const ExerciseSchema = new Schema({
     Exercise: {
             Name: String,
-            TimeDuration: Number,
+            TimeHours: Number,
+	    TimeMinutes: Number,
             Sets: Number,
             Reps: Number,
 	    Weight: Number,
@@ -13,4 +14,4 @@ const ExerciseSchema = new Schema({
             }
 })
 
-module.exports = mongoose.model("Workout", ExerciseSchema);
+module.exports = mongoose.model("Exercise", ExerciseSchema);
