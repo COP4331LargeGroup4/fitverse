@@ -6,9 +6,13 @@ const WorkoutSchema = new Schema({
             Name: String,
             Month: Number,
             Day: Number,
-            TimeOfDay: String,
+            Year: Number,
+            TimeHours: Number,
+            TimeMinutes: Number,
+            AMPM: Boolean,
+            Description: String,
             Complete: Boolean
             }
-})
+});
 
 module.exports = mongoose.model("Workout", WorkoutSchema);
