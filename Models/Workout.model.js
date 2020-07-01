@@ -3,13 +3,18 @@ const Schema = mongoose.Schema;
 
 const WorkoutSchema = new Schema({
     Workout: {
-            Name: String,
-            Month: Number,
-            Day: Number,
-            Year: Number,
+            Name: {
+            type: String,
+            required: true
+            },
+        
+            StartDate: {
+                type: Number,
+                required: true
+            },
+        
             TimeHours: Number,
             TimeMinutes: Number,
-            AMPM: Boolean,
             Description: String,
             Complete: Boolean
             }
