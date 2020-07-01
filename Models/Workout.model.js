@@ -13,11 +13,7 @@ const WorkoutSchema = new Schema({
                 required: true
             },
             
-            DayOfTheWeek: {
-                type: Array
-                [Mon, Tue, Wed, Thur, Fri, Sat, Sun]
-            },
-        
+          
             TimeHours: Number,
             TimeMinutes: Number,
             Description: String,
