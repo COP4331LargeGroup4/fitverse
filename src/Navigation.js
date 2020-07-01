@@ -102,6 +102,22 @@ export const useStyles = makeStyles((theme) => ({
     },
     listItems: {
         color:'white'
+    },
+    events: {
+      cursor:'pointer',
+      backgroundColor: '#416164'
+    },
+    eventButtons: {
+      float: 'right', 
+      marginLeft: 15
+    },
+    dayPicker: {
+      marginRight: '30px !important'
+    },
+    dayPickerSelected: {
+      marginRight: '30px !important',
+      color: 'white',
+      backgroundColor: 'blue'
     }
   }));
 
@@ -147,7 +163,7 @@ export function Navigation(props) {
                 open={open}
             >
                 <div className={classes.toolbarIcon}>
-                    <IconButton onClick={handleDrawerClose}>
+                    <IconButton onClick={handleDrawerClose} className={classes.listItems}>
                         <ChevronLeftIcon />
                     </IconButton>
                 </div>
