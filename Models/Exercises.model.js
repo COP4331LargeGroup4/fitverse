@@ -6,6 +6,7 @@ const ExerciseSchema = new Schema({
             Name: String,
             TimeHours: Number,
 	    TimeMinutes: Number,
+	    TimeSeconds: Number,
             Sets: Number,
             Reps: Number,
 	    Weight: Number,
