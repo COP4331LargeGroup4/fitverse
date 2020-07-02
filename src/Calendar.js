@@ -1,5 +1,5 @@
 import 'date-fns';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Container,
     Dialog,
@@ -31,13 +31,7 @@ import {
 } from '@material-ui/pickers';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
 
-const myEventsList = [
-    { title: 'Chest and Triceps', date: '2020-06-27' },
-    { title: 'Chest and Triceps', date: '2020-06-28' },
-    { title: 'Chest and Triceps', start: '2020-06-29' },
-    { title: 'event 1', date: '2020-06-27' },
-    { title: 'event 2', date: '2020-07-01' }
-]
+
 
 function Calendar(props) {
     const classes = useStyles();
@@ -46,14 +40,32 @@ function Calendar(props) {
     const [currentEvent, setCurrentEvent] = useState(
         {
             title: '',
-            dayOfWeek: '',
-            month: '',
-            day: '',
-            year: '',
+            startDate: '',
+            endDate: '',
             repeat: []
         });
-    const [events, setEvents] = useState(myEventsList);
     const [weekdayPicker, toggleWeekDayPicker] = useState(false);
+
+    var myEventsList = [
+        {
+            title: 'Chest and Triceps',
+            date: '2020-06-23',
+            startRecur: currentEvent.repeat.length ? '2020-06-23' : '',
+            endRecur: '',
+            daysOfWeek: currentEvent.repeat.length ? currentEvent.repeat : ''
+        },
+    ]
+
+    const [events, setEvents] = useState(myEventsList);
+
+    useEffect(() => {
+        var index = myEventsList.map(e => e.title).indexOf(currentEvent.title);
+        if (index !== -1) {
+            myEventsList[index].startRecur = currentEvent.repeat.length > 0 ? '2020-06-23' : '';
+            myEventsList[index].date = currentEvent.repeat.length > 0 ? undefined : '2020-06-23';
+            myEventsList[index].daysOfWeek = currentEvent.repeat.length > 0 ? currentEvent.repeat : undefined;
+        }
+    });
 
     const handleOpen = (event, el) => {
         var dayOfWeek = event.event._instance.range.end.getDay();
@@ -61,16 +73,12 @@ function Calendar(props) {
         var dayOfMonth = event.event._instance.range.end.getDate();
         var year = event.event._instance.range.end.getFullYear();
 
-        var monthString = moment(month.toString()).format('MMMM');
-        var dayOfWeekString = moment().weekday(dayOfWeek).format('dddd');
-        var yearString = year.toString();
+        var date = moment(year + " " + month + " " + dayOfMonth).format('YYYY-MM-DD');
 
         let newState = Object.assign({}, currentEvent);
         newState.title = event.event._def.title;
-        newState.dayOfWeek = dayOfWeekString;
-        newState.month = monthString;
-        newState.day = dayOfMonth;
-        newState.year = yearString;
+        newState.startDate = date;
+        console.log(date)
 
         setCurrentEvent(newState);
         toggleReadModal(true);
@@ -87,15 +95,19 @@ function Calendar(props) {
         toggleEditModal(true);
     };
 
-    const handleDateChange = (date) => {
+    const handleStartDateChange = (date) => {
         let newState = Object.assign({}, currentEvent);
-        newState.title = currentEvent.title;
-        newState.dayOfWeek = moment(date).format('dddd');
-        newState.month = moment(date).format('MMMM');
-        newState.day = moment(date).format('D');
-        newState.year = moment(date).format('YYYY');
+        newState.startDate = moment(date).format('MMM DD, YYYY');
+        console.log(newState)
         setCurrentEvent(newState);
     };
+
+    const handleEndDateChange = (date) => {
+        let newState = Object.assign({}, currentEvent);
+        newState.endDate = moment(date).format('MMM DD, YYYY');
+        console.log(newState)
+        setCurrentEvent(newState);
+    }
 
     const handleRepeatToggle = () => {
         toggleWeekDayPicker(!weekdayPicker);
@@ -105,17 +117,21 @@ function Calendar(props) {
         let newState = Object.assign({}, currentEvent);
         newState.repeat = newSelected;
         setCurrentEvent(newState);
-        console.log(newSelected);
+    }
+
+    const handleSave = () => {
+        setEvents(myEventsList);
+        handleClose();
     }
 
     const DayPicker = () => {
-        var daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+        var daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
         return (
             <ToggleButtonGroup value={currentEvent.repeat} onChange={handleChangeRepeatedDay}>
                 {daysOfWeek.map((day, key) => (
                     <ToggleButton
                         key={key}
-                        value={daysOfWeek[key]}
+                        value={key}
                     >
                         {day}
                     </ToggleButton>
@@ -152,7 +168,7 @@ function Calendar(props) {
                     <DialogTitle id="form-dialog-title">{currentEvent.title}</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            {currentEvent.dayOfWeek + ", " + currentEvent.month + " " + currentEvent.day}
+                            {moment(currentEvent.startDate).format('dddd, MMMM DD')}
                         </DialogContentText>
                         <List>
                             <ListSubheader>
@@ -183,6 +199,7 @@ function Calendar(props) {
                             label="Workout Name"
                             fullWidth
                             defaultValue={currentEvent.title}
+                            required
                         />
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
@@ -192,29 +209,48 @@ function Calendar(props) {
                                 margin="normal"
                                 id="date-picker-inline"
                                 label="Date"
-                                value={moment(currentEvent.day + currentEvent.month + currentEvent.year).format("MMM D, YYYY")}
-                                onChange={handleDateChange}
+                                value={moment(currentEvent.startDate).format("MMM D, YYYY")}
+                                onChange={handleStartDateChange}
                                 style={{ marginTop: 15 }}
                                 KeyboardButtonProps={{
                                     'aria-label': 'change date',
                                 }}
+                                required
                             />
                         </MuiPickersUtilsProvider>
 
                         <DialogContentText style={{ marginTop: 15 }}>
                             <FormControlLabel
                                 style={{ marginLeft: 0 }}
-                                control={<Switch color="primary" onChange={handleRepeatToggle} />}
+                                control={<Switch color="primary" onChange={handleRepeatToggle} checked={weekdayPicker} />}
                                 labelPlacement="start"
                                 label="Repeat weekly"
                             />
                         </DialogContentText>
                         {weekdayPicker &&
-                            <DayPicker />
+                            <div>
+                                <DayPicker />
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <KeyboardDatePicker
+                                        disableToolbar
+                                        variant="inline"
+                                        format="MMM d, yyy"
+                                        margin="normal"
+                                        id="date-picker-inline"
+                                        label="End date"
+                                        value={currentEvent.endDate.length ? moment(currentEvent.endDate).format("MMM D, YYYY") : null}
+                                        onChange={handleEndDateChange}
+                                        style={{ marginTop: 15 }}
+                                        KeyboardButtonProps={{
+                                            'aria-label': 'change date',
+                                        }}
+                                    />
+                                </MuiPickersUtilsProvider>
+                            </div>
                         }
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleClose} color="primary">
+                        <Button onClick={handleSave} color="primary">
                             Save
                         </Button>
                     </DialogActions>
