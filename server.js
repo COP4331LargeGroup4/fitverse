@@ -1,43 +1,24 @@
-const { createServer } = require('http');
 const express = require('express');
-const app = express();
 const path = require('path');
-const compression = require('compression');
-const morgan = require('morgan')
-const report = require('./Models/UserReport.js');
-const workout = require('./Models/WorkoutReport');
-const config = require('config');
-const mongoose = require('mongoose');
-const db = config.get('mongoURI');
 
-const port = process.env.PORT || 8080;
-const dev = app.get('env') !== 'production';
+const app = express();
 
-// Connects to the database collection
-mongoose
-.connect(db, {useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false})
-.then(() => console.log('MongoDB Connected...'))
-.catch(err => console.lof(err));
+// Serve the static files from the React app
+app.use(express.static(path.join(__dirname, 'client/build')));
 
-if (!dev) {
-    app.disable('x-powered-by');
-    app.use(compression());
-    app.use(morgan('common'));
+// An api endpoint that returns a short list of items
+app.get('/api/getList', (req,res) => {
+    var list = ["item1", "item2", "item3", "items4"];
+    res.json(list);
+    console.log('Sent list of items');
+});
 
-    app.use(express.static(path.join(__dirname, 'build')))
+// Handles any requests that don't match the ones above
+app.get('*', (req,res) =>{
+    res.sendFile(path.join(__dirname+'/client/build/index.html'));
+});
 
-    app.get('*', function (req, res) {
-        res.sendFile(path.join(__dirname, 'build', '/index.html'));
-    });
-}
+const port = process.env.PORT || 5000;
+app.listen(port);
 
-if (dev) {
-    app.use(morgan('dev'));
-}
-
-const server = createServer(app);
-server.listen(port, err => {
-    if (err) throw err;
-
-    console.log("Server started!");
-})
+console.log('App is listening on port ' + port);
