@@ -20,7 +20,7 @@ const UserSchema = new Schema({
 		type: String,
 		required: true
 	},
-	emailVerifed:{
+	emailVerified:{
 		type: Boolean,
 		required: true
 	}
