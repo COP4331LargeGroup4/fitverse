@@ -1,20 +1,26 @@
 {
-  "name": "fitversetaketwo",
+  "name": "fitverse",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "",
+  "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "heroku-postbuild": "cd client && npm install --only=dev && npm install && npm run build"
+	"test": "echo \"Error: no test specified\" && exit 1",
+	"start": "node index.js",
+    "heroku-postbuild": "cd client && npm install && npm run build"
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/COP4331LargeGroup4/fitverse.git"
+  },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "express": "^4.17.1"
+  "bugs": {
+    "url": "https://github.com/COP4331LargeGroup4/fitverse/issues"
   },
-  "devDependencies": {},
-  "description": "",
-  "engines": {
-    "node": "10.x"
+  "homepage": "https://github.com/COP4331LargeGroup4/fitverse#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "cowsay": "^1.4.0",
+    "express": "^4.17.1"
   }
 }

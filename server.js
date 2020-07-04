@@ -1,27 +1,42 @@
-const express = require('express');
-const path = require('path');
+const express = require('express')
+const cowsay = require('cowsay')
+const cors = require('cors')
+const path = require('path')
 
-const app = express();
+// Create the server
+const app = express()
 
-// Serve the static files from the React app
-app.use(express.static(path.join(__dirname, 'client/build')));
+// Serve static files from the React frontend app
+app.use(express.static(path.join(__dirname, 'client/build')))
 
-// An api endpoint that returns a short list of items
-app.get('/api/getList', (req, res) => {
-	var list = ["item1", "item2", "item3", "items4"];
-	res.json(list);
-	console.log('Sent list of items');
-});
+// Serve our api route /cow that returns a custom talking text cow
+app.get('/api/cow/:say', cors(), async (req, res, next) => {
+  try {
+    const text = req.params.say
+    const moo = cowsay.say({ text })
+    res.json({ moo })
+  } catch (err) {
+    next(err)
+  }
+})
 
-// Handles any requests that don't match the ones above
-app.get('/*', (req, res) => {
-	let url = path.join(__dirname, '../client/build', 'index.html');
-	if (!url.startsWith('/app/')) // we're on local windows
-		url = url.substring(1);
-	res.sendFile(url);
-});
+// Serve our base route that returns a Hellow World cow
+app.get('/api/cow/', cors(), async (req, res, next) => {
+  try {
+    const moo = cowsay.say({ text: 'Hello World!' })
+    res.json({ moo })
+  } catch (err) {
+    next(err)
+  }
+})
 
-const port = process.env.PORT || 5000;
-app.listen(port);
+// Anything that doesn't match the above, send back the index.html file
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/client/build/index.html'))
+})
 
-console.log('App is listening on port ' + port);
+// Choose the port and start the server
+const PORT = process.env.PORT || 5000
+app.listen(PORT, () => {
+  console.log(`Mixing it up on port ${PORT}`)
+})
