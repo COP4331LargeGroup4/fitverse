@@ -1,4 +1,6 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const path = require('path');
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
@@ -8,36 +10,56 @@ const PORT = process.env.PORT || 5000;
 
 // Multi-process to utilize all CPU cores.
 if (!isDev && cluster.isMaster) {
-  console.error(`Node cluster master ${process.pid} is running`);
+	console.error(`Node cluster master ${process.pid} is running`);
 
-  // Fork workers.
-  for (let i = 0; i < numCPUs; i++) {
-    cluster.fork();
-  }
+	// Fork workers.
+	for (let i = 0; i < numCPUs; i++) {
+		cluster.fork();
+	}
 
-  cluster.on('exit', (worker, code, signal) => {
-    console.error(`Node cluster worker ${worker.process.pid} exited: code ${code}, signal ${signal}`);
-  });
+	cluster.on('exit', (worker, code, signal) => {
+		console.error(`Node cluster worker ${worker.process.pid} exited: code ${code}, signal ${signal}`);
+	});
 
 } else {
-  const app = express();
+	const app = express();
 
-  // Priority serve any static files.
-  app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
+	// Bodyparser Middleware
+	app.use(bodyParser.json());
 
-  // Answer API requests.
-  app.get('/api', function (req, res) {
-	res.set('Content-Type', 'application/json');
-	var str = ('{"message":"Hello from the custom server!'.concat(Math.random())).concat('"}');
-    res.send(str);
-  });
+	// DB config
+	const db = require('./config/keys').mongoURI;
 
-  // All remaining requests return the React app, so it can handle routing.
-  app.get('*', function(request, response) {
-    response.sendFile(path.resolve(__dirname, '../react-ui/build', 'index.html'));
-  });
+	// Connect to mongo
+	mongoose
+		.connect(db, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
+		.then(() => console.log('MongoDB Connected...'))
+		.catch(err => console.error(err));
 
-  app.listen(PORT, function () {
-    console.error(`Node ${isDev ? 'dev server' : 'cluster worker '+process.pid}: listening on port ${PORT}`);
-  });
+	// Use Routes
+	const User = require('./routes/api/user')
+	//const Workout = require('./routes/api/workout')
+	//const Exercise = require('./routes/api/exercise')
+	app.use('/api/user', User);
+	//app.use('/api/workout', Workout);
+	//app.use('/api/exercise', Exercise);
+
+	// Priority serve any static files.
+	app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
+
+	// Answer API requests.
+	app.get('/api', function (req, res) {
+		res.set('Content-Type', 'application/json');
+		var str = ('{"message":"Hello from the custom server!'.concat(Math.random())).concat('"}');
+		res.send(str);
+	});
+
+	// All remaining requests return the React app, so it can handle routing.
+	app.get('*', function (request, response) {
+		response.sendFile(path.resolve(__dirname, '../react-ui/build', 'index.html'));
+	});
+
+	app.listen(PORT, function () {
+		console.error(`Node ${isDev ? 'dev server' : 'cluster worker ' + process.pid}: listening on port ${PORT}`);
+	});
 }
