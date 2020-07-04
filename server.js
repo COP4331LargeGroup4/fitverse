@@ -7,15 +7,18 @@ const app = express();
 app.use(express.static(path.join(__dirname, 'client/build')));
 
 // An api endpoint that returns a short list of items
-app.get('/api/getList', (req,res) => {
-    var list = ["item1", "item2", "item3", "items4"];
-    res.json(list);
-    console.log('Sent list of items');
+app.get('/api/getList', (req, res) => {
+	var list = ["item1", "item2", "item3", "items4"];
+	res.json(list);
+	console.log('Sent list of items');
 });
 
 // Handles any requests that don't match the ones above
-app.get('*', (req,res) =>{
-    res.sendFile(path.join(__dirname+'/client/build/index.html'));
+app.get('/*', (req, res) => {
+	let url = path.join(__dirname, '../client/build', 'index.html');
+	if (!url.startsWith('/app/')) // we're on local windows
+		url = url.substring(1);
+	res.sendFile(url);
 });
 
 const port = process.env.PORT || 5000;
