@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
@@ -14,6 +14,12 @@ import { TextField, CheckboxWithLabel } from 'formik-material-ui';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import * as Yup from 'yup';
 import { FormHelperText } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import axios from 'axios';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
+import Collapse from '@material-ui/core/Collapse';
+import jwtdecode from 'jwt-decode';
 
 function Copyright() {
 	return (
@@ -145,6 +151,34 @@ export function ResetPassword() {
 export function SignUp() {
 	const classes = useStyles();
 
+	const [apiError, setApiError] = useState(false);
+	const [apiErrorMessage, setApiErrorMessage] = useState("");
+	const [alertOpen, setAlertOpen] = useState(true);
+
+	function ErrorAlert() {
+		return (
+			<Collapse in={alertOpen} style={{width:"100%"}}>
+				<Alert 
+					severity="error" 
+					action={
+						<IconButton
+							aria-label="close"
+							color="inherit"
+							size="small"
+							onClick={() => {
+								setAlertOpen(false);
+							}}
+						>
+							<CloseIcon fontSize="inherit" />
+						</IconButton>
+					}
+				>
+					{apiErrorMessage}
+				</Alert>
+			</Collapse>
+		)
+	}
+
 	return (
 		<div style={{ backgroundColor: '#D9DBF1', height: '100vh', paddingTop: 48 }}>
 			<Container component="main" maxWidth="xs" justify="center" style={{ backgroundColor: '#FFFFFF', padding: 24, borderRadius: 24, marginTop: 48, border: '3px solid #ACB0BD' }}>
@@ -181,15 +215,40 @@ export function SignUp() {
 						})}
 
 						onSubmit={(values, { setSubmitting }) => {
+							axios
+							.post("/api/user/signup", {
+								firstName: values.firstname,
+								lastName: values.lastname,
+								email: values.email,
+								password: values.password
+							}, 
+							{
+								headers: { 
+									'Access-Control-Allow-Origin': '*',
+								},
+								mode: 'cors',
+							})
+							.then(function (response) {
+								localStorage.setItem('jwt', response.data.token);
+								localStorage.setItem('user', response.data.user);
 
-							setTimeout(() => {
+								window.location.href = '/dashboard';
+							})
+							.catch(function (err) {
+								setApiError(true);
+								// pulls error message from the api request in json key err
+								setApiErrorMessage(err.response.data.err);
 								setSubmitting(false);
-								alert(JSON.stringify(values, null, 2));
-							}, 500);
+								localStorage.removeItem('jwt');
+								localStorage.removeItem('user');
+							});
 						}}
 					>
 						{({ submitForm, isSubmitting, errors, touched }) => (
 							<form className={classes.form}>
+								<Grid container>
+									{apiError ? <ErrorAlert/> : null}
+								</Grid>
 								<Grid container spacing={2}>
 									<Grid item xs={12} sm={6}>
 										<Field
@@ -289,7 +348,48 @@ export function SignUp() {
 }
 
 export function SignIn() {
+	// should move function to login button instead of here since page blanks
+	if (localStorage.getItem('jwt') !== null)
+	{
+		var decodedjwt = jwtdecode(localStorage.getItem('jwt'));
+
+		// If jwt is valid, let user straight into site
+		if (decodedjwt.exp >= Math.round((new Date()).getTime() / 1000))
+		{
+			window.location.href = '/dashboard';
+			return(null);
+		}
+	}
+		
 	const classes = useStyles();
+
+	const [apiError, setApiError] = useState(false);
+	const [apiErrorMessage, setApiErrorMessage] = useState("");
+	const [alertOpen, setAlertOpen] = useState(true);
+
+	function ErrorAlert() {
+		return (
+			<Collapse in={alertOpen} style={{width:"100%"}}>
+				<Alert 
+					severity="error" 
+					action={
+						<IconButton
+							aria-label="close"
+							color="inherit"
+							size="small"
+							onClick={() => {
+								setAlertOpen(false);
+							}}
+						>
+							<CloseIcon fontSize="inherit" />
+						</IconButton>
+					}
+				>
+					{apiErrorMessage}
+				</Alert>
+			</Collapse>
+		)
+	}
 
 	return (
 		<div style={{ backgroundColor: '#D9DBF1', height: '100vh', paddingTop: 48 }}>
@@ -300,14 +400,13 @@ export function SignIn() {
 						<Img src={Logo} style={{ maxWidth: "100%" }} />
 					</NavLink>
 					<Typography component="h1" variant="h5" style={{ marginTop: 20 }}>
-						Sign up
+						Sign in
 					</Typography>
 
 					<Formik
 						initialValues={{
 							email: '',
 							password: '',
-							rememberme: false
 						}}
 						validationSchema={Yup.object({
 							email: Yup.string("Enter your email")
@@ -318,15 +417,36 @@ export function SignIn() {
 						})}
 
 						onSubmit={(values, { setSubmitting }) => {
+							axios
+							.post("/api/user/login", {
+								email: values.email,
+								password: values.password
+							}, {
+								headers: { 'Access-Control-Allow-Origin': '*' },
+								mode: 'cors',
+							})
+							.then(function (response) {
+								localStorage.setItem('jwt', response.data.token);
+								localStorage.setItem('user', response.data.user);
 
-							setTimeout(() => {
+								window.location.href = '/dashboard';
+
+							})
+							.catch(function (err) {
+								setApiError(true)
+								// pulls error message from the api request in json key err
+								setApiErrorMessage(err.response.data.err);
 								setSubmitting(false);
-								alert(JSON.stringify(values, null, 2));
-							}, 500);
+								localStorage.removeItem('jwt');
+								localStorage.removeItem('user');
+							});
 						}}
 					>
 						{({ submitForm, isSubmitting, errors, touched }) => (
 							<form className={classes.form}>
+								<Grid container>
+									{apiError ? <ErrorAlert/> : null}
+								</Grid>
 								<Grid container spacing={2}>
 									<Grid item xs={12}>
 										<Field
@@ -350,17 +470,6 @@ export function SignIn() {
 											required
 											fullWidth
 											variant="outlined"
-											margin="normal"
-											disabled={isSubmitting}
-										/>
-									</Grid>
-									<Grid item xs={12}>
-										<Field
-											component={CheckboxWithLabel}
-											name="rememberme"
-											type="checkbox"
-											Label={{ label: "Remember me" }}
-											required
 											margin="normal"
 											disabled={isSubmitting}
 										/>

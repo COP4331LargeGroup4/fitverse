@@ -32,7 +32,12 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Profile" />
     </ListItem>
-    <ListItem button component={NavLink} exact path to='/' style={{color: '#990000'}} activeClassName="Mui-selected">
+    <ListItem button component={NavLink} exact path to='/' style={{color: '#990000'}} activeClassName="Mui-selected"
+		onClick={() => {
+			localStorage.removeItem('jwt'); 
+			localStorage.removeItem('user');
+		}}
+	>
       <ListItemIcon style={{color: '#990000'}}>
         <ExitToAppIcon />
       </ListItemIcon>

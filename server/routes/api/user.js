@@ -24,12 +24,11 @@ router.post('/login', async (req, res) => {
 					const match = await bcrypt.compare(password, user.password);
 					if (!match) throw Error('Invalid credentials');
 
-					jwt.sign({ user }, jwtConfig.secretKey, { expiresIn: jwtConfig.timeout }, (err, token) => {
-						res.status(200).json({
+					jwt.sign({ _id: user._id }, jwtConfig.secretKey, { expiresIn: jwtConfig.timeout }, (err, token) => {
+						res.status(201).json({
 							token,
 
 							user: {
-								id: user._id,
 								firstName: user.firstName,
 								lastName: user.lastName,
 							}
@@ -48,67 +47,80 @@ router.post('/login', async (req, res) => {
 // @desc register user
 // @access  Public
 router.post('/signup', async (req, res) => {
-    const { firstName, lastName, email, password } = req.body;
+	const { firstName, lastName, email, password } = req.body;
 
-    // Simple validation
-    if (!firstName || !lastName || !email || !password) {
-        return res.status(400).json({ msg: 'Please enter all fields' });
-    }
+	// Simple validation
+	if (!firstName || !lastName || !email || !password) {
+		return res.status(400).json({ msg: 'Please enter all fields' });
+	}
 
-    try {
-        User.findOne({ email: email },
-            async function (err, user) {
-                try {
-                    if (user) throw Error('User already exists');
+	// Create User
+	try {
+		User.findOne({ email: email },
+			async function (err, user) {
+				try {
+					if (user) throw Error('User already exists');
 
-                    const salt = await bcrypt.genSalt(10);
-                    if (!salt) throw Error('Bcrypt salt error');
+					const salt = await bcrypt.genSalt(10);
+					if (!salt) throw Error('Bcrypt salt error');
 
-                    const hash = await bcrypt.hash(password, salt);
-                    if (!hash) throw Error('Bcrypt hash error');
+					const hash = await bcrypt.hash(password, salt);
+					if (!hash) throw Error('Bcrypt hash error');
 
-                    const newUser = new User({
-                        firstName,
-                        lastName,
-                        email,
-                        password: hash,
-                        emailVerified: false
-                    });
+					const newUser = new User({
+						firstName,
+						lastName,
+						email,
+						password: hash,
+						emailVerified: false
+					});
 
-                    const savedUser = await newUser.save();
-                    if (!savedUser) throw Error('Something went wrong saving the user');
+					const savedUser = await newUser.save();
+					if (!savedUser) throw Error('Something went wrong saving the user');
 
-                    res.status(200).json({
-                        user: {
-                            id: savedUser._id,
-                            firstName: savedUser.firstName,
-                            lastName: savedUser.lastName,
-                        }
-                    });
-                } catch (e) {
-                    res.status(400).json({ err: e.message });
-                }
-            });
-    } catch (e) {
-        res.status(400).json({ err: e.message });
-    }
+					jwt.sign({ _id: savedUser._id }, jwtConfig.secretKey, { expiresIn: jwtConfig.timeout }, (err, token) => {
+						res.status(201).json({
+							token,
+
+							user: {
+								firstName: savedUser.firstName,
+								lastName: savedUser.lastName,
+							}
+						});
+					});
+
+				} catch (e) {
+					res.status(400).json({ err: e.message });
+				}
+			});
+	} catch (e) {
+		res.status(400).json({ err: e.message });
+	}
+
+	//TODO: Actually Send email
+	jwt.sign({ email }, jwtConfig.secretKey, { expiresIn: jwtConfig.timeout }, (err, token) => {
+		// Send the email using the token string
+	});
 });
 
 // @route DELETE api/deleteAccount
 // @desc delete account
 router.post('/deleteAccount', async (req, res) => {
-	const { email, password, token } = req.body;
+	const { password, token } = req.body;
 
 	if (!token) {
-		console.log(token);
 		res.status(403).json();
 	} else {
 		jwt.verify(token, jwtConfig.secretKey, (err, authData) => {
 			if (err) {
-				res.status(403).json()
+				if (err.name == "TokenExpiredError") {
+					res.status(401).json()
+				} else {
+					res.status(403).json()
+				}
 			} else {
 				try {
-					User.findOne({ email: email },
+					User.findById(authData._id,
 						async function (err, user) {
 							try {
 								if (!user) throw Error('User does not exist');
@@ -116,11 +128,9 @@ router.post('/deleteAccount', async (req, res) => {
 								const match = await bcrypt.compare(password, user.password);
 								if (!match) throw Error('Invalid credentials');
 
-								User.findByIdAndDelete(user._id,
+								User.findByIdAndDelete(authData._id,
 									function (err) {
-										res.status(200).json({
-											msg: "user deleted"
-										});
+										res.status(200).json();
 									});
 							} catch (e) {
 								res.status(400).json({ err: e.message });
