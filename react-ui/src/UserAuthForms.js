@@ -188,7 +188,7 @@ export function SignUp() {
 
 						onSubmit={(values, { setSubmitting }) => {
 							axios
-							.post("http://localhost:5000/api/user/signup", {
+							.post("/api/user/signup", {
 								firstName: values.firstname,
 								lastName: values.lastname,
 								email: values.email,
@@ -409,7 +409,7 @@ export function SignIn() {
 
 						onSubmit={(values, { setSubmitting }) => {
 							axios
-							.post("http://localhost:5000/api/user/login", {
+							.post("/api/user/login", {
 								email: values.email,
 								password: values.password
 							}, {
