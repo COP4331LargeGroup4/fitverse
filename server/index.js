@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const path = require('path');
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
@@ -26,6 +27,9 @@ if (!isDev && cluster.isMaster) {
 
 	// Bodyparser Middleware
 	app.use(bodyParser.json());
+
+	// cors
+	app.use(cors());
 
 	// DB config
 	const db = require('./config/keys').mongoURI;

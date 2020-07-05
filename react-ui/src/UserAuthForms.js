@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
@@ -14,6 +14,12 @@ import { TextField, CheckboxWithLabel } from 'formik-material-ui';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import * as Yup from 'yup';
 import { FormHelperText } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import axios from 'axios';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
+import Collapse from '@material-ui/core/Collapse';
+import 'jwt-decode';
 
 function Copyright() {
 	return (
@@ -181,11 +187,63 @@ export function SignUp() {
 						})}
 
 						onSubmit={(values, { setSubmitting }) => {
+							axios
+							.post("http://localhost:5000/api/user/signup", {
+								firstName: values.firstname,
+								lastName: values.lastname,
+								email: values.email,
+								password: values.password
+							}, 
+							{
+								headers: { 
+									'Access-Control-Allow-Origin': '*',
+								},
+								mode: 'cors',
+							})
+							.then(function (response) {
+								alert(JSON.stringify(response));
+								//setSubmitting(false);
+								//localStorage.setItem('jwt', JSON.parse(response).token);
+								//localStorage.setItem('user', JSON.parse(response).user);
+								window.location.href = '/dashboard';
+							})
+							.catch(function (err) {
+								alert(err);
+								console.log(err);
+								return null;
+							});
+							
 
-							setTimeout(() => {
+							/*axios.post('http://fitverse.herokuapp.com/api/user/signup', {
+								firstName: values.firstname,
+								lastName: values.lastname,
+								email: values.email,
+								password: values.password
+							})
+							.then(function (response){
+								alert(response);
+							})
+							.catch(function (error) {
+								console.log(error);
+							});*/
+
+
+							/*axios({
+								method: 'post',
+								url: '/api/user/signup',
+								data: {
+									firstName: firstname,
+									lastName: lastname,
+									email: email,
+									password: password
+								}
+							})*/
+
+							//setSubmitting(false);
+							/*setTimeout(() => {
 								setSubmitting(false);
 								alert(JSON.stringify(values, null, 2));
-							}, 500);
+							}, 500);*/
 						}}
 					>
 						{({ submitForm, isSubmitting, errors, touched }) => (
@@ -289,7 +347,40 @@ export function SignUp() {
 }
 
 export function SignIn() {
+	if (localStorage.getItem('jwt') !== null)
+	{
+		// TODO: decode jwt with jwt-decode
+		window.location.href = '/dashboard';
+	}
+		
 	const classes = useStyles();
+
+	const [apiError, setApiError] = useState(false);
+	const [alertOpen, setAlertOpen] = useState(true);
+
+	function ErrorAlert() {
+		return (
+			<Collapse in={alertOpen} style={{width:"100%"}}>
+				<Alert 
+					severity="error" 
+					action={
+						<IconButton
+							aria-label="close"
+							color="inherit"
+							size="small"
+							onClick={() => {
+								setAlertOpen(false);
+							}}
+						>
+							<CloseIcon fontSize="inherit" />
+						</IconButton>
+					}
+				>
+					Invalid Email Address or Password
+				</Alert>
+			</Collapse>
+		)
+	}
 
 	return (
 		<div style={{ backgroundColor: '#D9DBF1', height: '100vh', paddingTop: 48 }}>
@@ -300,14 +391,13 @@ export function SignIn() {
 						<Img src={Logo} style={{ maxWidth: "100%" }} />
 					</NavLink>
 					<Typography component="h1" variant="h5" style={{ marginTop: 20 }}>
-						Sign up
+						Sign in
 					</Typography>
 
 					<Formik
 						initialValues={{
 							email: '',
 							password: '',
-							rememberme: false
 						}}
 						validationSchema={Yup.object({
 							email: Yup.string("Enter your email")
@@ -318,15 +408,45 @@ export function SignIn() {
 						})}
 
 						onSubmit={(values, { setSubmitting }) => {
+							axios
+							.post("http://localhost:5000/api/user/login", {
+								email: values.email,
+								password: values.password
+							}, {
+								headers: { 'Access-Control-Allow-Origin': '*' },
+								mode: 'cors',
+							})
+							.then(function (response) {
+								//setSubmitting(false);
+								//alert(localStorage.getItem('jwt'));
 
-							setTimeout(() => {
+								if (response.status === 200)
+								{
+									localStorage.setItem('jwt', response.data.token);
+									localStorage.setItem('user', response.data.user);
+
+									window.location.href = '/dashboard';
+								}
+								else
+								{
+									localStorage.removeItem('jwt');
+									localStorage.removeItem('user');
+								}
+							})
+							.catch(function (err) {
+								setApiError(true)
+								console.log(err);
 								setSubmitting(false);
-								alert(JSON.stringify(values, null, 2));
-							}, 500);
+								localStorage.removeItem('jwt');
+								localStorage.removeItem('user');
+							});
 						}}
 					>
 						{({ submitForm, isSubmitting, errors, touched }) => (
 							<form className={classes.form}>
+								<Grid container>
+									{apiError ? <ErrorAlert/> : null}
+								</Grid>
 								<Grid container spacing={2}>
 									<Grid item xs={12}>
 										<Field
@@ -350,17 +470,6 @@ export function SignIn() {
 											required
 											fullWidth
 											variant="outlined"
-											margin="normal"
-											disabled={isSubmitting}
-										/>
-									</Grid>
-									<Grid item xs={12}>
-										<Field
-											component={CheckboxWithLabel}
-											name="rememberme"
-											type="checkbox"
-											Label={{ label: "Remember me" }}
-											required
 											margin="normal"
 											disabled={isSubmitting}
 										/>
