@@ -10,6 +10,7 @@ import Chart from './Chart';
 import Deposits from './Deposits';
 import Orders from './Orders';
 import {useStyles} from './Navigation'
+import Calendar from './Calendar';
 
 function Copyright() {
   return (
@@ -35,17 +36,17 @@ export function Dashboard() {
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={3}>
             {/* Chart */}
-            <Grid item xs={12} md={8} lg={9}>
+            <Grid item xs={12} md={8} lg={12}>
               <Paper className={fixedHeightPaper}>
-                <Chart />
+                <Calendar dashboard={true} className={fixedHeightPaper} style={{maxHeight: '150px !important'}}/>
               </Paper>
             </Grid>
             {/* Recent Deposits */}
-            <Grid item xs={12} md={4} lg={3}>
+            {/* <Grid item xs={12} md={4} lg={3}>
               <Paper className={fixedHeightPaper}>
                 <Deposits />
               </Paper>
-            </Grid>
+            </Grid> */}
             {/* Recent Orders */}
             <Grid item xs={6}>
               <Paper className={classes.paper}>

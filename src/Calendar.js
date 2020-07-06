@@ -54,6 +54,20 @@ function Calendar(props) {
             endRecur: '',
             daysOfWeek: currentEvent.repeat.length ? currentEvent.repeat : ''
         },
+        // {
+        //     title: 'Chest and Triceps',
+        //     date: '2020-07-03',
+        //     startRecur: currentEvent.repeat.length ? '2020-06-23' : '',
+        //     endRecur: '',
+        //     daysOfWeek: currentEvent.repeat.length ? currentEvent.repeat : ''
+        // },
+        // {
+        //     title: 'Chest and Triceps',
+        //     date: '2020-07-14',
+        //     startRecur: currentEvent.repeat.length ? '2020-06-23' : '',
+        //     endRecur: '',
+        //     daysOfWeek: currentEvent.repeat.length ? currentEvent.repeat : ''
+        // },
     ]
 
     const [events, setEvents] = useState(myEventsList);
@@ -100,6 +114,7 @@ function Calendar(props) {
         newState.startDate = moment(date).format('MMM DD, YYYY');
         console.log(newState)
         setCurrentEvent(newState);
+
     };
 
     const handleEndDateChange = (date) => {
@@ -127,11 +142,13 @@ function Calendar(props) {
     const DayPicker = () => {
         var daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
         return (
-            <ToggleButtonGroup value={currentEvent.repeat} onChange={handleChangeRepeatedDay}>
+            <ToggleButtonGroup value={currentEvent.repeat} onChange={handleChangeRepeatedDay} color="blue">
                 {daysOfWeek.map((day, key) => (
                     <ToggleButton
                         key={key}
                         value={key}
+                        color="blue"
+                        title={moment().day(key).format('dddd')}
                     >
                         {day}
                     </ToggleButton>
@@ -143,15 +160,30 @@ function Calendar(props) {
 
     return (
         <div className={classes.content}>
-            <div className={classes.appBarSpacer} />
+            <div className={props.dashboard ? undefined : classes.appBarSpacer} />
             <Container maxWidth="lg" className={classes.container}>
-                <FullCalendar
-                    plugins={[dayGridPlugin]}
-                    initialView="dayGridMonth"
-                    events={events}
-                    eventClassNames={classes.events}
-                    eventClick={(event, el) => handleOpen(event, el)}
-                />
+                {props.dashboard ?
+                    <FullCalendar
+                        initialView="dayGridWeek"
+                        // firstDay='1'
+                        // locale='en'
+                        // firstDay='1'
+                        plugins={[dayGridPlugin]}
+                        // headerToolbar={false}
+                        contentHeight={150}
+                        eventClassNames={classes.events}
+                        events={events}
+                        eventClick={(event, el) => handleOpen(event, el)}
+                    />
+                    :
+                    <FullCalendar
+                        plugins={[dayGridPlugin]}
+                        initialView="dayGridMonth"
+                        events={events}
+                        eventClassNames={classes.events}
+                        eventClick={(event, el) => handleOpen(event, el)}
+                    />
+                }
                 {/* Read only modal */}
                 <Dialog open={readModal} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth={true} maxWidth={'xs'}>
                     <DialogContent style={{ marginBottom: -15 }}>
@@ -171,9 +203,7 @@ function Calendar(props) {
                             {moment(currentEvent.startDate).format('dddd, MMMM DD')}
                         </DialogContentText>
                         <List>
-                            <ListSubheader>
-                                Excercises:
-                            </ListSubheader>
+                            Excercises
                         </List>
 
                     </DialogContent>
@@ -211,10 +241,11 @@ function Calendar(props) {
                                 label="Date"
                                 value={moment(currentEvent.startDate).format("MMM D, YYYY")}
                                 onChange={handleStartDateChange}
-                                style={{ marginTop: 15 }}
+                                style={{ marginTop: 15, width: 130 }}
                                 KeyboardButtonProps={{
                                     'aria-label': 'change date',
                                 }}
+                                autoOk
                                 required
                             />
                         </MuiPickersUtilsProvider>
@@ -229,8 +260,7 @@ function Calendar(props) {
                         </DialogContentText>
                         {weekdayPicker &&
                             <div>
-                                <DayPicker />
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                     <KeyboardDatePicker
                                         disableToolbar
                                         variant="inline"
@@ -240,12 +270,14 @@ function Calendar(props) {
                                         label="End date"
                                         value={currentEvent.endDate.length ? moment(currentEvent.endDate).format("MMM D, YYYY") : null}
                                         onChange={handleEndDateChange}
-                                        style={{ marginTop: 15 }}
+                                        style={{ marginTop: -15 }}
                                         KeyboardButtonProps={{
                                             'aria-label': 'change date',
                                         }}
                                     />
-                                </MuiPickersUtilsProvider>
+                                </MuiPickersUtilsProvider> */}
+                                <DialogContentText>Repeat on</DialogContentText>
+                                <DayPicker />
                             </div>
                         }
                     </DialogContent>
