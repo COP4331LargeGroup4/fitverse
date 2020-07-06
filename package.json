@@ -1,12 +1,12 @@
 {
-  "name": "fitverse-server",
-  "version": "1.0.0",
-  "description": "Express server component for fitverse",
+  "name": "heroku-cra-node",
+  "version": "3.0.0",
+  "description": "How to use create-react-app with a custom Node API on Heroku",
   "engines": {
     "node": "10.x"
   },
   "scripts": {
-    "start": "nodemon server",
+    "start": "node server",
     "build": "cd react-ui/ && npm install && npm run build"
   },
   "cacheDirectories": [
@@ -17,7 +17,7 @@
     "bcrypt": "^5.0.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
-    "express": "^4.17.1",
+    "express": "^4.16.4",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.21"
   },
