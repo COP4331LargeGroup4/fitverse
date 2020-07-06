@@ -49,25 +49,25 @@ function Calendar(props) {
     var myEventsList = [
         {
             title: 'Chest and Triceps',
-            date: '2020-06-23',
+            date: '2020-07-06',
+            startRecur: currentEvent.repeat.length ? '2020-07-06' : '',
+            endRecur: '',
+            daysOfWeek: currentEvent.repeat.length ? currentEvent.repeat : ''
+        },
+        {
+            title: 'Back and Biceps',
+            date: '2020-07-03',
             startRecur: currentEvent.repeat.length ? '2020-06-23' : '',
             endRecur: '',
             daysOfWeek: currentEvent.repeat.length ? currentEvent.repeat : ''
         },
-        // {
-        //     title: 'Chest and Triceps',
-        //     date: '2020-07-03',
-        //     startRecur: currentEvent.repeat.length ? '2020-06-23' : '',
-        //     endRecur: '',
-        //     daysOfWeek: currentEvent.repeat.length ? currentEvent.repeat : ''
-        // },
-        // {
-        //     title: 'Chest and Triceps',
-        //     date: '2020-07-14',
-        //     startRecur: currentEvent.repeat.length ? '2020-06-23' : '',
-        //     endRecur: '',
-        //     daysOfWeek: currentEvent.repeat.length ? currentEvent.repeat : ''
-        // },
+        {
+            title: 'Cardio',
+            date: '2020-07-12',
+            startRecur: currentEvent.repeat.length ? '2020-06-23' : '',
+            endRecur: '',
+            daysOfWeek: currentEvent.repeat.length ? currentEvent.repeat : ''
+        },
     ]
 
     const [events, setEvents] = useState(myEventsList);
@@ -241,7 +241,7 @@ function Calendar(props) {
                                 label="Date"
                                 value={moment(currentEvent.startDate).format("MMM D, YYYY")}
                                 onChange={handleStartDateChange}
-                                style={{ marginTop: 15, width: 130 }}
+                                style={{ marginTop: 15, width: 140 }}
                                 KeyboardButtonProps={{
                                     'aria-label': 'change date',
                                 }}
