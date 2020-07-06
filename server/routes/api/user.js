@@ -25,7 +25,7 @@ router.post('/login', async (req, res) => {
 					if (!match) throw Error('Invalid credentials');
 
 					jwt.sign({ _id: user._id }, jwtConfig.secretKey, { expiresIn: jwtConfig.timeout }, (err, token) => {
-						res.status(201).json({
+						res.status(200).json({
 							token,
 
 							user: {
@@ -79,7 +79,7 @@ router.post('/signup', async (req, res) => {
 					if (!savedUser) throw Error('Something went wrong saving the user');
 
 					jwt.sign({ _id: savedUser._id }, jwtConfig.secretKey, { expiresIn: jwtConfig.timeout }, (err, token) => {
-						res.status(201).json({
+						res.status(200).json({
 							token,
 
 							user: {
@@ -128,9 +128,11 @@ router.post('/deleteAccount', async (req, res) => {
 								const match = await bcrypt.compare(password, user.password);
 								if (!match) throw Error('Invalid credentials');
 
-								User.findByIdAndDelete(authData._id,
+								User.findByIdAndDelete(user._id,
 									function (err) {
-										res.status(200).json();
+										res.status(200).json({
+											msg: "user deleted"
+										});
 									});
 							} catch (e) {
 								res.status(400).json({ err: e.message });

@@ -19,7 +19,7 @@ import axios from 'axios';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import Collapse from '@material-ui/core/Collapse';
-import jwtdecode from 'jwt-decode';
+import 'jwt-decode';
 
 function Copyright() {
 	return (
@@ -151,34 +151,6 @@ export function ResetPassword() {
 export function SignUp() {
 	const classes = useStyles();
 
-	const [apiError, setApiError] = useState(false);
-	const [apiErrorMessage, setApiErrorMessage] = useState("");
-	const [alertOpen, setAlertOpen] = useState(true);
-
-	function ErrorAlert() {
-		return (
-			<Collapse in={alertOpen} style={{width:"100%"}}>
-				<Alert 
-					severity="error" 
-					action={
-						<IconButton
-							aria-label="close"
-							color="inherit"
-							size="small"
-							onClick={() => {
-								setAlertOpen(false);
-							}}
-						>
-							<CloseIcon fontSize="inherit" />
-						</IconButton>
-					}
-				>
-					{apiErrorMessage}
-				</Alert>
-			</Collapse>
-		)
-	}
-
 	return (
 		<div style={{ backgroundColor: '#D9DBF1', height: '100vh', paddingTop: 48 }}>
 			<Container component="main" maxWidth="xs" justify="center" style={{ backgroundColor: '#FFFFFF', padding: 24, borderRadius: 24, marginTop: 48, border: '3px solid #ACB0BD' }}>
@@ -229,26 +201,53 @@ export function SignUp() {
 								mode: 'cors',
 							})
 							.then(function (response) {
-								localStorage.setItem('jwt', response.data.token);
-								localStorage.setItem('user', response.data.user);
-
+								alert(JSON.stringify(response));
+								//setSubmitting(false);
+								//localStorage.setItem('jwt', JSON.parse(response).token);
+								//localStorage.setItem('user', JSON.parse(response).user);
 								window.location.href = '/dashboard';
 							})
 							.catch(function (err) {
-								setApiError(true);
-								// pulls error message from the api request in json key err
-								setApiErrorMessage(err.response.data.err);
-								setSubmitting(false);
-								localStorage.removeItem('jwt');
-								localStorage.removeItem('user');
+								alert(err);
+								console.log(err);
+								return null;
 							});
+							
+
+							/*axios.post('http://fitverse.herokuapp.com/api/user/signup', {
+								firstName: values.firstname,
+								lastName: values.lastname,
+								email: values.email,
+								password: values.password
+							})
+							.then(function (response){
+								alert(response);
+							})
+							.catch(function (error) {
+								console.log(error);
+							});*/
+
+
+							/*axios({
+								method: 'post',
+								url: '/api/user/signup',
+								data: {
+									firstName: firstname,
+									lastName: lastname,
+									email: email,
+									password: password
+								}
+							})*/
+
+							//setSubmitting(false);
+							/*setTimeout(() => {
+								setSubmitting(false);
+								alert(JSON.stringify(values, null, 2));
+							}, 500);*/
 						}}
 					>
 						{({ submitForm, isSubmitting, errors, touched }) => (
 							<form className={classes.form}>
-								<Grid container>
-									{apiError ? <ErrorAlert/> : null}
-								</Grid>
 								<Grid container spacing={2}>
 									<Grid item xs={12} sm={6}>
 										<Field
@@ -348,23 +347,15 @@ export function SignUp() {
 }
 
 export function SignIn() {
-	// should move function to login button instead of here since page blanks
 	if (localStorage.getItem('jwt') !== null)
 	{
-		var decodedjwt = jwtdecode(localStorage.getItem('jwt'));
-
-		// If jwt is valid, let user straight into site
-		if (decodedjwt.exp >= Math.round((new Date()).getTime() / 1000))
-		{
-			window.location.href = '/dashboard';
-			return(null);
-		}
+		// TODO: decode jwt with jwt-decode
+		window.location.href = '/dashboard';
 	}
 		
 	const classes = useStyles();
 
 	const [apiError, setApiError] = useState(false);
-	const [apiErrorMessage, setApiErrorMessage] = useState("");
 	const [alertOpen, setAlertOpen] = useState(true);
 
 	function ErrorAlert() {
@@ -385,7 +376,7 @@ export function SignIn() {
 						</IconButton>
 					}
 				>
-					{apiErrorMessage}
+					Invalid Email Address or Password
 				</Alert>
 			</Collapse>
 		)
@@ -426,16 +417,25 @@ export function SignIn() {
 								mode: 'cors',
 							})
 							.then(function (response) {
-								localStorage.setItem('jwt', response.data.token);
-								localStorage.setItem('user', response.data.user);
+								//setSubmitting(false);
+								//alert(localStorage.getItem('jwt'));
 
-								window.location.href = '/dashboard';
+								if (response.status === 200)
+								{
+									localStorage.setItem('jwt', response.data.token);
+									localStorage.setItem('user', response.data.user);
 
+									window.location.href = '/dashboard';
+								}
+								else
+								{
+									localStorage.removeItem('jwt');
+									localStorage.removeItem('user');
+								}
 							})
 							.catch(function (err) {
 								setApiError(true)
-								// pulls error message from the api request in json key err
-								setApiErrorMessage(err.response.data.err);
+								console.log(err);
 								setSubmitting(false);
 								localStorage.removeItem('jwt');
 								localStorage.removeItem('user');
