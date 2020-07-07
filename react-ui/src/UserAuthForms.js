@@ -19,7 +19,7 @@ import axios from 'axios';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import Collapse from '@material-ui/core/Collapse';
-import 'jwt-decode';
+import jwtdecode from 'jwt-decode';
 
 function Copyright() {
 	return (
@@ -68,6 +68,175 @@ const useStyles = makeStyles((theme) => ({
 export function ResetPassword() {
 	const classes = useStyles();
 
+	const [sent, setSent] = useState(false);
+
+	const token = new URLSearchParams(window.location.search).get('token');
+
+	function ForgotForm() {
+		return (
+			<>
+				<Typography component="h1" variant="h5" style={{ marginTop: 20 }}>
+					Forgot your password?
+			</Typography>
+				<Typography component="subtitle1">
+					Enter your email to reset it
+			</Typography>
+				<Formik
+					initialValues={{
+						email: '',
+					}}
+					validationSchema={Yup.object({
+						email: Yup.string("Enter your email")
+							.email("Enter valid email")
+							.required("Email is required"),
+					})}
+
+					onSubmit={(values, { setSubmitting }) => {
+
+						axios
+							.post("/api/user/forgotPassword", {
+								email: values.email
+							},
+								{
+									headers: {
+										'Access-Control-Allow-Origin': '*',
+									},
+									mode: 'cors',
+								})
+							.then(function (response) {
+								alert(JSON.stringify(response.data));
+								setSubmitting(false);
+								setSent(true);
+							})
+							.catch(function (err) {
+								alert(err);
+								console.log(err);
+								setSubmitting(false);
+								return null;
+							});
+
+
+						/*setTimeout(() => {
+							setSubmitting(false);
+							alert(JSON.stringify(values, null, 2));
+							setSent(true);
+						}, 500);*/
+
+					}}
+				>
+					{({ submitForm, isSubmitting, errors, touched }) => (
+						<form className={classes.form}>
+							<Grid container spacing={2}>
+								<Grid item xs={12}>
+									<Field
+										component={TextField}
+										name="email"
+										type="email"
+										label="Email Address"
+										required
+										fullWidth
+										variant="outlined"
+										margin="normal"
+										disabled={isSubmitting}
+									/>
+								</Grid>
+							</Grid>
+							<Button
+								fullWidth
+								variant="contained"
+								color="primary"
+								disabled={isSubmitting}
+								onClick={submitForm}
+								className={classes.submit}
+							>
+								Send Password Reset Email
+							{isSubmitting && <CircularProgress size={12} className={classes.buttonProgress} />}
+							</Button>
+						</form>
+					)}
+				</Formik>
+			</>
+		)
+	}
+
+	function ResetForm() {
+		return (
+			<>
+				<Typography component="h1" variant="h5" style={{ marginTop: 20 }}>
+					Enter your new password
+				</Typography>
+				<Formik
+					initialValues={{
+						password: '',
+					}}
+					validationSchema={Yup.object({
+						password: Yup.string("Enter your password")
+							.min(8, "Password must contain at least 8 character")
+							.required("Password is required")
+					})}
+
+					onSubmit={(values, { setSubmitting }) => {
+						axios
+							.post("/api/user/resetPassword", {
+								token: token,
+								password: values.password
+							},
+								{
+									headers: {
+										'Access-Control-Allow-Origin': '*',
+									},
+									mode: 'cors',
+								})
+							.then(function (response) {
+								alert(JSON.stringify(response.data));
+								setSubmitting(false);
+								setSent(true);
+							})
+							.catch(function (err) {
+								alert(err);
+								console.log(err);
+								setSubmitting(false);
+								return null;
+							})
+
+					}}
+				>
+					{({ submitForm, isSubmitting, errors, touched }) => (
+						<form className={classes.form}>
+							<Grid container spacing={2}>
+								<Grid item xs={12}>
+									<Field
+										component={TextField}
+										name="password"
+										type="password"
+										label="New password"
+										required
+										fullWidth
+										variant="outlined"
+										margin="normal"
+										disabled={isSubmitting}
+									/>
+								</Grid>
+							</Grid>
+							<Button
+								fullWidth
+								variant="contained"
+								color="primary"
+								disabled={isSubmitting}
+								onClick={submitForm}
+								className={classes.submit}
+							>
+								Change password
+							{isSubmitting && <CircularProgress size={12} className={classes.buttonProgress} />}
+							</Button>
+						</form>
+					)}
+				</Formik>
+			</>
+		)
+	}
+
+
 	return (
 		<div style={{ backgroundColor: '#D9DBF1', height: '100vh', paddingTop: 48 }}>
 			<Container component="main" maxWidth="xs" justify="center" style={{ backgroundColor: '#FFFFFF', padding: 24, borderRadius: 24, marginTop: 48, border: '3px solid #ACB0BD' }}>
@@ -76,69 +245,12 @@ export function ResetPassword() {
 					<NavLink exact to="/">
 						<Img src={Logo} style={{ maxWidth: "100%" }} />
 					</NavLink>
-					<Typography component="h1" variant="h5" style={{ marginTop: 20 }}>
-						Forgot your password?
-					</Typography>
-					<Typography component="subtitle1">
-						Enter your email to reset it
-					</Typography>
 
-					<Formik
-						initialValues={{
-							email: '',
-						}}
-						validationSchema={Yup.object({
-							email: Yup.string("Enter your email")
-								.email("Enter valid email")
-								.required("Email is required"),
-						})}
-
-						onSubmit={(values, { setSubmitting }) => {
-
-							setTimeout(() => {
-								setSubmitting(false);
-								alert(JSON.stringify(values, null, 2));
-							}, 500);
-						}}
-					>
-						{({ submitForm, isSubmitting, errors, touched }) => (
-							<form className={classes.form}>
-								<Grid container spacing={2}>
-									<Grid item xs={12}>
-										<Field
-											component={TextField}
-											name="email"
-											type="email"
-											label="Email Address"
-											required
-											fullWidth
-											variant="outlined"
-											margin="normal"
-											disabled={isSubmitting}
-										/>
-									</Grid>
-								</Grid>
-								<Button
-									fullWidth
-									variant="contained"
-									color="primary"
-									disabled={isSubmitting}
-									onClick={submitForm}
-									className={classes.submit}
-								>
-									Send Password Reset Email
-								{isSubmitting && <CircularProgress size={12} className={classes.buttonProgress} />}
-								</Button>
-								<Grid container justify="flex-end">
-									<Grid item>
-										<NavLink exact to="signin" variant="body2">
-											Already have an account? Sign in
-									</NavLink>
-									</Grid>
-								</Grid>
-							</form>
-						)}
-					</Formik>
+					{token == null ?
+						(!sent ? <ForgotForm /> : <Typography style={{ marginTop: 20 }}>Check your email for instructions to reset your password</Typography>)
+						:
+						<ResetForm />
+					}
 				</div>
 				<Box mt={5}>
 					<Copyright />
@@ -188,31 +300,32 @@ export function SignUp() {
 
 						onSubmit={(values, { setSubmitting }) => {
 							axios
-							.post("/api/user/signup", {
-								firstName: values.firstname,
-								lastName: values.lastname,
-								email: values.email,
-								password: values.password
-							}, 
-							{
-								headers: { 
-									'Access-Control-Allow-Origin': '*',
+								.post("/api/user/signup", {
+									firstName: values.firstname,
+									lastName: values.lastname,
+									email: values.email,
+									password: values.password
 								},
-								mode: 'cors',
-							})
-							.then(function (response) {
-								alert(JSON.stringify(response));
-								//setSubmitting(false);
-								//localStorage.setItem('jwt', JSON.parse(response).token);
-								//localStorage.setItem('user', JSON.parse(response).user);
-								window.location.href = '/dashboard';
-							})
-							.catch(function (err) {
-								alert(err);
-								console.log(err);
-								return null;
-							});
-							
+									{
+										headers: {
+											'Access-Control-Allow-Origin': '*',
+										},
+										mode: 'cors',
+									})
+								.then(function (response) {
+									alert(JSON.stringify(response));
+									setSubmitting(false);
+									//localStorage.setItem('jwt', JSON.parse(response).token);
+									//localStorage.setItem('user', JSON.parse(response).user);
+									window.location.href = '/dashboard';
+								})
+								.catch(function (err) {
+									alert(err);
+									console.log(err);
+									setSubmitting(false);
+									return null;
+								});
+
 
 							/*axios.post('http://fitverse.herokuapp.com/api/user/signup', {
 								firstName: values.firstname,
@@ -331,7 +444,7 @@ export function SignUp() {
 									<Grid item>
 										<NavLink exact to="signin" variant="body2">
 											Already have an account? Sign in
-									</NavLink>
+										</NavLink>
 									</Grid>
 								</Grid>
 							</form>
@@ -347,12 +460,17 @@ export function SignUp() {
 }
 
 export function SignIn() {
-	if (localStorage.getItem('jwt') !== null)
-	{
-		// TODO: decode jwt with jwt-decode
-		window.location.href = '/dashboard';
+	// should move function to login button instead of here since page blanks
+	if (localStorage.getItem('jwt') !== null) {
+		var decodedjwt = jwtdecode(localStorage.getItem('jwt'));
+
+		// If jwt is valid, let user straight into site
+		if (decodedjwt.exp >= Math.round((new Date()).getTime() / 1000)) {
+			window.location.href = '/dashboard';
+			return (null);
+		}
 	}
-		
+
 	const classes = useStyles();
 
 	const [apiError, setApiError] = useState(false);
@@ -360,9 +478,9 @@ export function SignIn() {
 
 	function ErrorAlert() {
 		return (
-			<Collapse in={alertOpen} style={{width:"100%"}}>
-				<Alert 
-					severity="error" 
+			<Collapse in={alertOpen} style={{ width: "100%" }}>
+				<Alert
+					severity="error"
 					action={
 						<IconButton
 							aria-label="close"
@@ -409,43 +527,41 @@ export function SignIn() {
 
 						onSubmit={(values, { setSubmitting }) => {
 							axios
-							.post("/api/user/login", {
-								email: values.email,
-								password: values.password
-							}, {
-								headers: { 'Access-Control-Allow-Origin': '*' },
-								mode: 'cors',
-							})
-							.then(function (response) {
-								//setSubmitting(false);
-								//alert(localStorage.getItem('jwt'));
+								.post("/api/user/login", {
+									email: values.email,
+									password: values.password
+								}, {
+									headers: { 'Access-Control-Allow-Origin': '*' },
+									mode: 'cors',
+								})
+								.then(function (response) {
+									setSubmitting(false);
+									//alert(localStorage.getItem('jwt'));
 
-								if (response.status === 200)
-								{
-									localStorage.setItem('jwt', response.data.token);
-									localStorage.setItem('user', response.data.user);
+									if (response.status === 200) {
+										localStorage.setItem('jwt', response.data.token);
+										localStorage.setItem('user', response.data.user);
 
-									window.location.href = '/dashboard';
-								}
-								else
-								{
+										window.location.href = '/dashboard';
+									}
+									else {
+										localStorage.removeItem('jwt');
+										localStorage.removeItem('user');
+									}
+								})
+								.catch(function (err) {
+									setApiError(true)
+									console.log(err);
+									setSubmitting(false);
 									localStorage.removeItem('jwt');
 									localStorage.removeItem('user');
-								}
-							})
-							.catch(function (err) {
-								setApiError(true)
-								console.log(err);
-								setSubmitting(false);
-								localStorage.removeItem('jwt');
-								localStorage.removeItem('user');
-							});
+								});
 						}}
 					>
 						{({ submitForm, isSubmitting, errors, touched }) => (
 							<form className={classes.form}>
 								<Grid container>
-									{apiError ? <ErrorAlert/> : null}
+									{apiError ? <ErrorAlert /> : null}
 								</Grid>
 								<Grid container spacing={2}>
 									<Grid item xs={12}>

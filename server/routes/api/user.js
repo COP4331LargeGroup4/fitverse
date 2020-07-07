@@ -2,13 +2,50 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { json } = require('express');
+const nodemailer = require('nodemailer');
+const senderemail = 'fitverse123@gmail.com';
+const senderpassword = 'w_u`d(.ZXP`SQ5fz';
 
 
 // User model
 const User = require('../../models/user');
 const jwtConfig = require('./Config/jwtConfig');
+
+// Email Template
+var smtpTransport = nodemailer.createTransport({
+	service: 'Gmail',
+	auth: {
+		user: senderemail,
+		pass: senderpassword
+	}
+});
+
+function forgotPasswordText(name, token) {
+	const url = 'http://localhost:3000/resetpassword?token=' + token;
+	return (`Dear `+ name + `,
+			You requested for a password reset, kindly navigate to ` + url + ` to reset your password.
+			Cheers!`
+	)
+}
+
+function forgotPasswordEmail(name, token) {
+	const url = 'http://localhost:3000/resetpassword?token=' + token;
+	return (`<div>
+			<h3>Dear `+ name + `,</h3>
+			<p>You requested for a password reset, kindly use this <a href=` + url + `>link</a> to reset your password</p>
+			<br>
+			<p>Cheers!</p>
+			</div>`
+	)
+}
+
+
+
+
+
 
 // @route POST api/user/login
 // @desc login user
@@ -143,6 +180,77 @@ router.post('/deleteAccount', async (req, res) => {
 				}
 			}
 		});
+	}
+});
+
+router.post('/forgotPassword', async (req, res) => {
+	try {
+		var user = await User.find({ email: req.body.email });
+
+		if (user.length != 1) throw Error('User not found');
+
+		user = user[0];
+
+		user = await User.findByIdAndUpdate(
+			{_id: user._id}, 
+			{
+				passwordResetToken: crypto.randomBytes(10).toString('hex'), 
+				passwordResetTokenExp: Math.round((new Date()).getTime() / 1000) + 43200
+			});
+
+		user = await User.find({ email: req.body.email });
+		user = user[0];
+
+		var emaildata = {
+			to: user.email,
+			from: senderemail,
+			subject: 'Fitverse password reset',
+			text: forgotPasswordText(user.firstName + ' ' + user.lastName, user.passwordResetToken),
+			html: forgotPasswordEmail(user.firstName + ' ' + user.lastName, user.passwordResetToken)
+		};
+
+		await smtpTransport.sendMail(emaildata);
+
+		res.status(200).json({msg:"Success, Check email for next steps"});
+	}
+	catch (e) {
+		console.log(e.message);
+		res.status(400).json({ err: e.message });
+	}
+
+});
+
+router.post('/resetPassword', async (req, res) => {
+	try {
+		var user = await User.find({ passwordResetToken: req.body.token });
+
+		if (user.length != 1) throw Error('Token not found');
+
+		user = user[0];
+
+		var id = user._id;
+
+		if (user.passwordResetTokenExp < Math.round((new Date()).getTime() / 1000)) throw Error('Token Expired');
+
+		const salt = await bcrypt.genSalt(10);
+		if (!salt) throw Error('Bcrypt salt error');
+
+		const hash = await bcrypt.hash(req.body.password, salt);
+		if (!hash) throw Error('Bcrypt hash error');
+
+		user = await User.findByIdAndUpdate(
+			{_id: user._id}, 
+			{
+				password: hash,
+				passwordResetToken: null, 
+				passwordResetTokenExp: null,
+			});
+
+		res.status(200).json({msg:"Password has been updated successfully"});
+	}
+	catch (e) {
+		console.log(e.message);
+		res.status(400).json({ err: e.message });
 	}
 });
 
