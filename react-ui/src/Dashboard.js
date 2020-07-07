@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Chart from './Chart';
+import Calendar from './Calendar';
 import ButtonComponent from './ButtonComponent';
 import Orders from './Orders';
 import {useStyles} from './Navigation'
@@ -35,9 +35,12 @@ export function Dashboard() {
       <Container maxWidth="lg" className={classes.container}>
         <Grid container spacing={3}>
           {/* Chart */}
-          <Grid item xs={12} md={5} lg={6}>
-            <Paper className={fixedHeightPaper}>
-              <Chart />
+          <Grid item xs={12}>
+            <Paper style={{ boxShadow: '3px 3px 10px 6px #ccc', borderRadius: 8, padding: '5px 5px 20px 10px' }}>
+              <Typography component="h3" variant="h6" color="inherit" noWrap className={classes.title}>
+                This week's scheduled workouts:
+              </Typography>
+              <Calendar dashboard={true} />
             </Paper>
           </Grid>
           {/* Recent Deposits */}
