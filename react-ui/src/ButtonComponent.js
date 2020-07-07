@@ -18,8 +18,12 @@ import {
   InputLabel,
   FormControl,
   FormControlLabel,
+  FormLabel,
   Switch,
+  MenuItem,
   makeStyles,
+  Radio,
+  RadioGroup,
 } from '@material-ui/core';
 import Title from './Title';
 import 'date-fns';
@@ -61,32 +65,42 @@ const useStyles = makeStyles((theme) => ({
       width: '25ch',
     },
   },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
 }));
 
 export default function ButtonComponents() {
   const classes = useStyles();
 
-  const [open, setOpen] = React.useState(false);
+  const [workoutOpen, setWorkoutOpen] = React.useState(false);
+  const [exerciseOpen, setExerciseOpen] = React.useState(false);
 
   const [state, setState] = React.useState({
     weekDayMonth: 'week',
   });
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleWorkoutOpen = () => {
+    setWorkoutOpen(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleWorkoutClose = () => {
+    setWorkoutOpen(false);
   };
 
-  const handleChange = (event) => {
-    const name = event.target.name;
-    setState({
-      ...state,
-      [name]: event.target.value,
-    });
+  const handleExerciseOpen = () => {
+    setExerciseOpen(true);
   };
+
+  const handleExerciseClose = () => {
+    setExerciseOpen(false);
+  };
+
+  const handleChangeRadio = (event) => {
+    setValue(event.target.value);
+  };
+
+  const [value, setValue] = React.useState('Cardio');
 
   const handleRepeatToggle = () => {
     toggleWeekDayPicker(!weekdayPicker);
@@ -97,6 +111,12 @@ export default function ButtonComponents() {
     newState.repeat = newSelected;
     setCurrentEvent(newState);
   }
+
+  const [timeAmount, setTimeAmount] = React.useState('');
+
+  const handleChangeSelector = (event) => {
+    setTimeAmount(event.target.value);
+  };
 
   const [currentEvent, setCurrentEvent] = useState(
   {
@@ -111,23 +131,23 @@ export default function ButtonComponents() {
   const DayPicker = () => {
     var daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
     return (
-        <ToggleButtonGroup value={currentEvent.repeat} onChange={handleChangeRepeatedDay}>
-            {daysOfWeek.map((day, key) => (
-                <ToggleButton
-                    key={key}
-                    value={key}
-                >
-                    {day}
-                </ToggleButton>
+      <ToggleButtonGroup value={currentEvent.repeat} onChange={handleChangeRepeatedDay}>
+        {daysOfWeek.map((day, key) => (
+          <ToggleButton
+            key={key}
+            value={key}
+          >
+          {day}
+          </ToggleButton>
 
-            ))}
-        </ToggleButtonGroup>
+        ))}
+      </ToggleButtonGroup>
     )
-}
+  }
 
   const AddWorkoutDialog = () =>{
     return(
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+      <Dialog open={workoutOpen} onClose={handleWorkoutClose} aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title">Add a Workout</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -149,7 +169,7 @@ export default function ButtonComponents() {
               <Grid item>
                 <TextField
                     id="StartDate"
-                    label="Select a Start Date"
+                    label="Start Date"
                     type="date"
                     required
                     margin="dense"
@@ -163,7 +183,7 @@ export default function ButtonComponents() {
               <Grid item>
                 <TextField
                     id="EndDate"
-                    label="Select an End Date"
+                    label="End Date"
                     type="date"
                     margin="dense"
                     defaultValue="2020-06-30"
@@ -184,6 +204,7 @@ export default function ButtonComponents() {
             
           {weekdayPicker &&
           <div>
+            <DialogContentText>Repeat on</DialogContentText>
             <DayPicker />
           </div>
           }
@@ -202,10 +223,10 @@ export default function ButtonComponents() {
 
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleWorkoutClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleWorkoutClose} color="primary">
             Create Workout
           </Button>
         </DialogActions>
@@ -213,28 +234,149 @@ export default function ButtonComponents() {
     );
   }
 
+  const AddExerciseDialog = () =>{
+    return(
+      <Dialog open={exerciseOpen} onClose={handleExerciseClose} aria-labelledby="form-dialog-title">
+      <DialogTitle id="form-dialog-title">Add an Exercise</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            These exercises are also added to the MyExercises page.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            name="exerciseName"
+            variant="outlined"
+            required
+            fullWidth
+            type="name"
+            id="exerciseName"
+            label="Exercise Name"
+          />
+          <FormControl component="fieldset">
+            <RadioGroup name="exerciseType" value={value} onChange={handleChangeRadio}>
+              <Grid container spacing={5}>
+                <Grid item>
+                  <FormControlLabel value="Cardio" control={<Radio />} label="Cardio"/>
+                </Grid>
+                <Grid item>
+                  <FormControlLabel value="Strength" control={<Radio />} label="Strength" />
+                </Grid>
+              </Grid>
+            </RadioGroup>
+          </FormControl>
+          <Container maxWidth="lg" className={classes.container} style={{padding: 0, marginTop: 0}}>
+            <Grid container spacing={3}>
+            <Grid item>
+                <TextField
+                  margin="dense"
+                  name="time"
+                  variant="outlined"
+                  fullWidth
+                  id="amountTime"
+                  label="Time Amount"
+                />
+              </Grid>   
+              <Grid item>
+              <FormControl variant="outlined" margin="dense" className={classes.formControl}>
+                <InputLabel id="timeUnitLabel">time unit</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={timeAmount}
+                  onChange={handleChangeSelector}
+                  label="time unit"
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  <MenuItem value={10}>seconds</MenuItem>
+                  <MenuItem value={20}>minutes</MenuItem>
+                  <MenuItem value={30}>hours</MenuItem>
+                </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          </Container>
+          <Container maxWidth="lg" className={classes.container} style={{padding: 0}}>
+            <Grid container spacing={3}>
+              <Grid item>
+                <TextField
+                  margin="dense"
+                  name="sets"
+                  variant="outlined"
+                  fullWidth
+                  type="sets"
+                  id="numSets"
+                  label="# Sets"
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                  margin="dense"
+                  name="reps"
+                  variant="outlined"
+                  fullWidth
+                  type="reps"
+                  id="numReps"
+                  label="# Reps"
+                />
+              </Grid>
+           </Grid> 
+          </Container>  
+
+          <TextField
+            margin="dense"
+            name="weights"
+            variant="outlined"    
+            id="amountWeight"
+            label="Weight Amount (lbs)"
+          />
+          <TextField
+            margin="dense"
+            marginTop="2"
+            name="myNotes"
+            variant="outlined"
+            fullWidth
+            type="goals"
+            id="outlined-multiline-static"
+            label="My Notes About This Exercise"
+            multiline
+            rows={4}    
+          />
+
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleExerciseClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleExerciseClose} color="primary">
+            Add Exercise
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }    
+
   return (
     <React.Fragment>
       <Title>Hello</Title>
       <Grid container spacing={3}>
-            {/* Chart */}
-            <Grid item lg={6}>
-            <Button size="large" variant="contained" color="primary"  style={{backgroundColor: '#416164'}} >My Workouts</Button>
-            </Grid>
-            {/* Recent Deposits */}
-            <Grid item lg={6}>
-            <Button size="large" variant="contained" color="primary"  style={{backgroundColor: '#416164'}} onClick={handleClickOpen}>My Exercises</Button>
-            </Grid>
-            <Grid item lg={6}>
-            <Button size="large" variant="contained" color="primary"  style={{backgroundColor: '#416164'}} onClick={handleClickOpen}>Add Workout</Button>
-            <AddWorkoutDialog/>
-
-      </Grid>
-      <Grid item lg={6}>    
-        <Button size="large" variant="contained" color="primary"  style={{backgroundColor: '#416164'}}>My Goals</Button>
+        <Grid item lg={6}>
+          <Button size="large" variant="contained" color="primary"  style={{backgroundColor: '#416164'}} >My Workouts</Button>
         </Grid>
-      </Grid>
-        
+        <Grid item lg={6}>
+          <Button size="large" variant="contained" color="primary"  style={{backgroundColor: '#416164'}} onClick={handleExerciseOpen}>Add Exercises</Button>
+          <AddExerciseDialog/>
+        </Grid>
+        <Grid item lg={6}>
+          <Button size="large" variant="contained" color="primary"  style={{backgroundColor: '#416164'}} onClick={handleWorkoutOpen}>Add Workout</Button>
+          <AddWorkoutDialog/>
+        </Grid>
+        <Grid item lg={6}>    
+          <Button size="large" variant="contained" color="primary"  style={{backgroundColor: '#416164'}}>My Goals</Button>
+        </Grid>
+      </Grid>   
     </React.Fragment>
   );
 }
