@@ -159,18 +159,21 @@ function Calendar(props) {
     }
 
     return (
-        <div className={classes.content}>
+        <div className={props.dashboard ? undefined : classes.content}>
             <div className={props.dashboard ? undefined : classes.appBarSpacer} />
-            <Container maxWidth="lg" className={classes.container}>
+            <Container maxWidth="lg" className={props.dashboard ? undefined : classes.container}>
                 {props.dashboard ?
                     <FullCalendar
+                    aspectRatio={5}
                         initialView="dayGridWeek"
                         // firstDay='1'
                         // locale='en'
                         // firstDay='1'
                         plugins={[dayGridPlugin]}
-                        // headerToolbar={false}
-                        contentHeight={150}
+                        headerToolbar={false}
+                        contentHeight={145}
+                        // height={120}
+                        // eventBackgroundColor={'green'}
                         eventClassNames={classes.events}
                         events={events}
                         eventClick={(event, el) => handleOpen(event, el)}

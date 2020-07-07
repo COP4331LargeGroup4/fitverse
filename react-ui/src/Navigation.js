@@ -98,7 +98,7 @@ export const useStyles = makeStyles((theme) => ({
       backgroundColor: '#D0CDD7', //light purple 
     },
     fixedHeight: {
-      height: 240,
+      height: 150,
     },
     listItems: {
         color:'white'
