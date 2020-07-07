@@ -24,7 +24,7 @@ var smtpTransport = nodemailer.createTransport({
 });
 
 function forgotPasswordText(name, token) {
-	const url = 'http://localhost:3000/resetpassword?token=' + token;
+	const url = 'https://fitverse.herokuapp.com/resetpassword?token=' + token;
 	return (`Dear `+ name + `,
 			You requested for a password reset, kindly navigate to ` + url + ` to reset your password.
 			Cheers!`
@@ -32,7 +32,7 @@ function forgotPasswordText(name, token) {
 }
 
 function forgotPasswordEmail(name, token) {
-	const url = 'http://localhost:3000/resetpassword?token=' + token;
+	const url = 'https://fitverse.herokuapp.com/resetpassword?token=' + token;
 	return (`<div>
 			<h3>Dear `+ name + `,</h3>
 			<p>You requested for a password reset, kindly use this <a href=` + url + `>link</a> to reset your password</p>
