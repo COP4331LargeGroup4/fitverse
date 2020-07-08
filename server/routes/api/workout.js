@@ -48,8 +48,6 @@ router.post('/create', async (req, res) => {
 						notes
 					})
 
-					console.log(newWorkout);
-
 					const savedExercise = await newWorkout.save();
 					if (!savedExercise) {
 						httpErr = 500;
@@ -93,7 +91,6 @@ router.post('/read', async (req, res) => {
 						throw Error('No id');
 					}
 
-
 					var workout = await Workout.findById(id);
 
 					// Auth
@@ -101,9 +98,6 @@ router.post('/read', async (req, res) => {
 						httpErr = 404
 						throw Error('Nonexistent Workout')
 					}
-
-					// Because javascript is stupid just leave this alone
-					workout = JSON.parse(JSON.stringify(workout));
 
 					if (workout.userId != authData._id) {
 						httpErr = 403;
@@ -224,17 +218,14 @@ router.post('/update', async (req, res) => {
 						throw Error('Nonexistent Workout');
 					}
 
-					// Because javascript is stupid just leave this alone
-					workout = JSON.parse(JSON.stringify(workout));
-
 					if (workout.userId != authData._id) {
 						httpErr = 403;
 						throw Error('Invalid credentials');
-					}	
-					
+					}
+
 					Workout.findByIdAndUpdate(id,
 						{
-							name, 
+							name,
 							exercises: _.difference(_.union(addExercises, workout.exercises), removeExercises),
 							weekly, startDate, endDate, notes
 						},
@@ -282,10 +273,7 @@ router.post('/delete', async (req, res) => {
 						httpErr = 404
 						throw Error('Nonexistent Exercise');
 					}
-					
-					// Because javascript is stupid just leave this alone
-					workout = JSON.parse(JSON.stringify(workout));
-					
+
 					if (workout.userId != authData._id) {
 						httpErr = 403;
 						throw Error('Invalid credentials');
