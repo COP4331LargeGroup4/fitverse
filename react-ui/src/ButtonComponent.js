@@ -359,22 +359,16 @@ export default function ButtonComponents() {
   }    
 
   return (
-    <React.Fragment>
-      <Title>Hello</Title>
-      <Grid container spacing={3}>
-        <Grid item lg={6}>
-          <Button size="large" variant="contained" color="primary"  style={{backgroundColor: '#416164'}} >My Workouts</Button>
-        </Grid>
-        <Grid item lg={6}>
-          <Button size="large" variant="contained" color="primary"  style={{backgroundColor: '#416164'}} onClick={handleExerciseOpen}>Add Exercises</Button>
+    <React.Fragment justifyContent= "center" alignItems= "center">
+      <Title></Title>
+      <Grid container spacing={3} justify="center">
+        <Grid item >
+          <Button size="large" variant="contained" color="primary"  fullWidth style={{backgroundColor: '#416164'}} onClick={handleExerciseOpen}>Add Exercise</Button>
           <AddExerciseDialog/>
         </Grid>
-        <Grid item lg={6}>
-          <Button size="large" variant="contained" color="primary"  style={{backgroundColor: '#416164'}} onClick={handleWorkoutOpen}>Add Workout</Button>
+        <Grid item>
+          <Button size="large" variant="contained" color="primary"  fullWidth style={{backgroundColor: '#416164'}} onClick={handleWorkoutOpen}>Add Workout</Button>
           <AddWorkoutDialog/>
-        </Grid>
-        <Grid item lg={6}>    
-          <Button size="large" variant="contained" color="primary"  style={{backgroundColor: '#416164'}}>My Goals</Button>
         </Grid>
       </Grid>   
     </React.Fragment>

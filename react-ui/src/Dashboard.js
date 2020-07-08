@@ -33,8 +33,7 @@ export function Dashboard() {
     <main className={classes.content}>
       <div className={classes.appBarSpacer} />
       <Container maxWidth="lg" className={classes.container}>
-        <Grid container spacing={3}>
-          {/* Chart */}
+        <Grid container spacing={4}>
           <Grid item xs={12}>
             <Paper style={{ boxShadow: '3px 3px 10px 6px #ccc', borderRadius: 8, padding: '5px 5px 20px 10px' }}>
               <Typography component="h3" variant="h6" color="inherit" noWrap className={classes.title}>
@@ -44,20 +43,19 @@ export function Dashboard() {
             </Paper>
           </Grid>
           {/* Recent Deposits */}
+          {/* Exercise Checklist */}
           <Grid item xs={12} md={5} lg={6}>
-            <Paper className={fixedHeightPaper}>
+            <Paper style={{ boxShadow: '3px 3px 10px 6px #a6a5a7', backgroundColor: '#D0CDD7', borderRadius: 8, padding: '5px 5px 20px 10px' }}>
+                Today's Exercises are Displayed Here
+                <Orders />
+            </Paper>
+          </Grid>
+          <Grid item xs={4} md={4} lg={4}>
+            <Paper style={{ boxShadow: '3px 3px 10px 6px #a6a5a7', backgroundColor: '#D0CDD7', borderRadius: 8, padding: '5px 5px 20px 10px' }}>
+              <Typography component="h3" variant="h6" color="inherit" noWrap className={classes.title}>
+                  Quick Add
+              </Typography>
               <ButtonComponent />
-            </Paper>
-          </Grid>
-          {/* Recent Orders */}
-          <Grid item xs={6}>
-            <Paper className={classes.paper}>
-              <Orders />
-            </Paper>
-          </Grid>
-          <Grid item xs={6}>
-            <Paper className={classes.paper}>
-              <Orders />
             </Paper>
           </Grid>
         </Grid>
