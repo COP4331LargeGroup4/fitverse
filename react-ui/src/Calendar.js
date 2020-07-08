@@ -30,8 +30,9 @@ import {
     KeyboardDatePicker,
 } from '@material-ui/pickers';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
+import WorkoutUtil from './util-api/workout-utl'
 
-
+const workoutUtil = new WorkoutUtil();
 
 function Calendar(props) {
     const classes = useStyles();
@@ -82,6 +83,9 @@ function Calendar(props) {
     });
 
     const handleOpen = (event, el) => {
+        workoutUtil.getAllWorkouts().then(result => {
+            console.log(result)
+        })
         var dayOfWeek = event.event._instance.range.end.getDay();
         var month = event.event._instance.range.end.getMonth() + 1;
         var dayOfMonth = event.event._instance.range.end.getDate();

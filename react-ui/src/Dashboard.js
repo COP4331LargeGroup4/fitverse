@@ -38,18 +38,12 @@ export function Dashboard() {
           {/* Chart */}
           <Grid item xs={12}>
             <Paper style={{ boxShadow: '3px 3px 10px 6px #ccc', borderRadius: 8, padding: '5px 5px 20px 10px' }}>
-              <Typography component="h3" variant="h6" color="inherit" noWrap className={classes.title}>
+              <Typography component="h3" variant="h6" color="inherit" noWrap className={classes.title} style={{marginBottom: 10}}>
                 This week's scheduled workouts:
               </Typography>
               <Calendar dashboard={true} />
             </Paper>
           </Grid>
-          {/* Recent Deposits */}
-          {/* <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}>
-                <Deposits />
-              </Paper>
-            </Grid> */}
           {/* Recent Orders */}
           <Grid item xs={6}>
             <Paper className={classes.paper}>
