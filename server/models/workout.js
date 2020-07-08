@@ -3,28 +3,31 @@ const Schema = mongoose.Schema;
 
 // create schema
 const WorkoutSchema = new Schema({
-	name:{
-		type:String,
-		required: true,
-		unique: true
+	userId: {
+		type: String,
+		required: true
 	},
-	exercises:{
+	name: {
+		type: String,
+		required: true,
+	},
+	exercises: {
 		type: [String],
 		required: true,
 		default: []
 	},
-	weekly:{
+	weekly: {
 		type: [Number],
 		required: true
 	},
-	startDate:{
-		type : String,
-		required : true
+	startDate: {
+		type: Date,
+		required: true
 	},
-	endDate:{
-		type : String,
+	endDate: {
+		type: Date,
 	},
-	notes:{
+	notes: {
 		type: String
 	}
 });
