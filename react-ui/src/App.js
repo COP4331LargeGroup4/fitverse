@@ -10,6 +10,7 @@ import Profile from './Profile'
 import { SignIn, SignUp, ResetPassword } from './UserAuthForms';
 import Terms from './Terms';
 import PrivacyPolicy from './PrivacyPolicy';
+import Exercises from './Exercises';
 
 const pages = {
 	dashboard: {
@@ -21,6 +22,11 @@ const pages = {
 		title: "Calendar",
 		path: "/calendar",
 		page: <Calendar />
+	},
+	exercises: {
+		title: "My Exercises",
+		path: "/exercises",
+		page: <Exercises />
 	},
 	profile: {
 		title: "Profile",

@@ -164,7 +164,6 @@ function Calendar(props) {
             <Container maxWidth="lg" className={props.dashboard ? undefined : classes.container}>
                 {props.dashboard ?
                     <FullCalendar
-                    aspectRatio={5}
                         initialView="dayGridWeek"
                         // firstDay='1'
                         // locale='en'
@@ -181,7 +180,9 @@ function Calendar(props) {
                     :
                     <FullCalendar
                         plugins={[dayGridPlugin]}
+                        // initialView="dayGridWeek"
                         initialView="dayGridMonth"
+                        // headerToolbar={false}
                         events={events}
                         eventClassNames={classes.events}
                         eventClick={(event, el) => handleOpen(event, el)}
