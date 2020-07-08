@@ -100,9 +100,6 @@ export const useStyles = makeStyles((theme) => ({
     fixedHeight: {
       height: 240,
     },
-    workoutBoxHeight: {
-      height: 450,
-    },
     listItems: {
         color:'white'
     }
