@@ -45,7 +45,7 @@ function forgotPasswordEmail(name, token) {
 function verifyText(name, token) {
 	const url = 'https://fitverse.herokuapp.com/verify?token=' + token;
 	return (`Dear `+ name + `,
-			Please verify your email, kindly navigate to ` + url + ` to reset your password.
+			Please verify your email, kindly navigate to ` + url + ` to verify your account.
 			Cheers!`
 	)
 }
@@ -54,7 +54,7 @@ function verifyEmail(name, token) {
 	const url = 'https://fitverse.herokuapp.com/verify?token=' + token;
 	return (`<div>
 			<h3>Dear `+ name + `,</h3>
-			<p>Please verify your email, kindly use this <a href=` + url + `>link</a> to reset your password</p>
+			<p>Please verify your email, kindly use this <a href=` + url + `>link</a> to verify your account</p>
 			<br>
 			<p>Cheers!</p>
 			</div>`
