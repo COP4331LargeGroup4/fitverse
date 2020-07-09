@@ -42,6 +42,25 @@ function forgotPasswordEmail(name, token) {
 	)
 }
 
+function verifyText(name, token) {
+	const url = 'https://fitverse.herokuapp.com/verify?token=' + token;
+	return (`Dear `+ name + `,
+			Please verify your email, kindly navigate to ` + url + ` to reset your password.
+			Cheers!`
+	)
+}
+
+function verifyEmail(name, token) {
+	const url = 'https://fitverse.herokuapp.com/verify?token=' + token;
+	return (`<div>
+			<h3>Dear `+ name + `,</h3>
+			<p>Please verify your email, kindly use this <a href=` + url + `>link</a> to reset your password</p>
+			<br>
+			<p>Cheers!</p>
+			</div>`
+	)
+}
+
 
 
 
@@ -109,8 +128,20 @@ router.post('/signup', async (req, res) => {
 						lastName,
 						email,
 						password: hash,
-						emailVerified: false
+						emailVerified: false,
+						emailVerificationToken: crypto.randomBytes(10).toString('hex'),
+						emailVerificationTokenExp: Math.round((new Date()).getTime() / 1000) + 43200
 					});
+
+					var emaildata = {
+						to: newUser.email,
+						from: senderemail,
+						subject: 'Fitverse email verification',
+						text: verifyText(newUser.firstName + ' ' + newUser.lastName, newUser.emailVerificationToken),
+						html: verifyEmail(newUser.firstName + ' ' + newUser.lastName, newUser.emailVerificationToken)
+					};
+				
+					await smtpTransport.sendMail(emaildata);
 
 					const savedUser = await newUser.save();
 					if (!savedUser) throw Error('Something went wrong saving the user');
@@ -138,6 +169,78 @@ router.post('/signup', async (req, res) => {
 	jwt.sign({ email }, jwtConfig.secretKey, { expiresIn: jwtConfig.timeout }, (err, token) => {
 		// Send the email using the token string
 	});
+});
+
+router.post('/resendVerification', async (req, res) => {
+	try {
+		var user;
+		if (req.body.token != null)
+		{
+			user = await User.find({ emailVerificationToken: req.body.token });
+		}
+		else if (req.body.email != null)
+		{
+			user = await User.find({ email: req.body.email });
+		}
+
+		if (user.length != 1) throw Error('User not found');
+
+		user = user[0];
+
+		user = await User.findByIdAndUpdate(
+			{_id: user._id}, 
+			{
+				emailVerificationToken: crypto.randomBytes(10).toString('hex'),
+				emailVerificationTokenExp: Math.round((new Date()).getTime() / 1000) + 43200
+			});
+
+		var emaildata = {
+			to: user.email,
+			from: senderemail,
+			subject: 'Fitverse password reset',
+			text: forgotPasswordText(user.firstName + ' ' + user.lastName, user.emailVerificationToken),
+			html: forgotPasswordEmail(user.firstName + ' ' + user.lastName, user.emailVerificationToken)
+		};
+	
+		await smtpTransport.sendMail(emaildata);
+	
+		res.status(200).json({msg:"Success, Check email for next steps"});
+	}
+	catch (e) {
+		console.log(e.message);
+		res.status(400).json({ err: e.message });
+	}
+})
+
+router.post('/verify', async (req, res) => {
+	try {
+		var user = await User.find({ emailVerificationToken: req.body.token });
+
+		if (user.length != 1) throw Error('Token not found');
+
+		user = user[0];
+
+		if (user.emailVerificationTokenExp < Math.round((new Date()).getTime() / 1000))
+		{
+			throw Error('Token Expired');
+		} 
+		
+		user = await User.findByIdAndUpdate(
+			{_id: user._id}, 
+			{
+				emailVerified: true,
+				emailVerificationToken: null, 
+				emailVerificationTokenExp: null,
+			});
+
+
+
+		res.status(200).json({msg:"success"});
+	}
+	catch (e) {
+		console.log(e.message);
+		res.status(400).json({ err: e.message });
+	}
 });
 
 // @route DELETE api/deleteAccount

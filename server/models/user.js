@@ -24,19 +24,19 @@ const UserSchema = new Schema({
 		type: Boolean,
 		required: true
 	},
-	emailVerificationToken:{
-		type: String,
-		required: false
-	},
-	emailVerificationTokenExp:{
-		type: Number,
-		required: false
-	},
 	passwordResetToken:{
 		type: String,
 		required: false
 	},
 	passwordResetTokenExp:{
+		type: Number,
+		required: false
+	},
+	emailVerificationToken:{
+		type: String,
+		required: false
+	},
+	emailVerificationTokenExp:{
 		type: Number,
 		required: false
 	}
