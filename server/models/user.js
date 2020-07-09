@@ -23,6 +23,22 @@ const UserSchema = new Schema({
 	emailVerified:{
 		type: Boolean,
 		required: true
+	},
+	passwordResetToken:{
+		type: String,
+		required: false
+	},
+	passwordResetTokenExp:{
+		type: Number,
+		required: false
+	},
+	emailVerificationToken:{
+		type: String,
+		required: false
+	},
+	emailVerificationTokenExp:{
+		type: Number,
+		required: false
 	}
 });
 
