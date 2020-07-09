@@ -38,11 +38,11 @@ if (!isDev && cluster.isMaster) {
 
 	// Use Routes
 	const User = require('./routes/api/user')
-	//const Workout = require('./routes/api/workout')
-	//const Exercise = require('./routes/api/exercise')
+	const Workout = require('./routes/api/workout')
+	const Exercise = require('./routes/api/exercise')
 	app.use('/api/user', User);
-	//app.use('/api/workout', Workout);
-	//app.use('/api/exercise', Exercise);
+	app.use('/api/workout', Workout);
+	app.use('/api/exercise', Exercise);
 
 	// Priority serve any static files.
 	app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
