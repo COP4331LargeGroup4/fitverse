@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Container,
   Dialog,
@@ -15,6 +15,7 @@ import {
   Select,
   ListSubheader,
   IconButton,
+  Icon,
   InputLabel,
   FormControl,
   FormControlLabel,
@@ -28,11 +29,7 @@ import {
 import Title from './Title';
 import 'date-fns';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
-import DateFnsUtils from '@date-io/date-fns';
-import {
-    MuiPickersUtilsProvider,
-    KeyboardDatePicker,
-} from '@material-ui/pickers';
+import AddIcon from '@material-ui/icons/Add';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -47,11 +44,6 @@ const useStyles = makeStyles((theme) => ({
   depositContext: {
     flex: 1,
   },
-  closeButton: {
-    position: 'absolute',
-    right: 1,
-    top: 1,
-  },
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
@@ -65,58 +57,47 @@ const useStyles = makeStyles((theme) => ({
       width: '25ch',
     },
   },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
 }));
 
 export default function ButtonComponents() {
   const classes = useStyles();
 
   const [workoutOpen, setWorkoutOpen] = React.useState(false);
-  const [exerciseOpen, setExerciseOpen] = React.useState(false);
-
-  const [state, setState] = React.useState({
-    weekDayMonth: 'week',
-  });
-
   const handleWorkoutOpen = () => {
     setWorkoutOpen(true);
   };
-
   const handleWorkoutClose = () => {
     setWorkoutOpen(false);
   };
 
+  const [exerciseOpen, setExerciseOpen] = React.useState(false);
   const handleExerciseOpen = () => {
     setExerciseOpen(true);
   };
-
   const handleExerciseClose = () => {
     setExerciseOpen(false);
   };
 
+  const [value, setValue] = React.useState('Cardio');
   const handleChangeRadio = (event) => {
     setValue(event.target.value);
   };
+ 
+  const [timeAmount, setTimeAmount] = React.useState('');
+  const handleTimeUnitSelector = (event) => {
+    setTimeAmount(event.target.value);
+  };
 
-  const [value, setValue] = React.useState('Cardio');
-
+  // Muhamad's buttons
+  const [weekdayPicker, toggleWeekDayPicker] = useState(false);
   const handleRepeatToggle = () => {
     toggleWeekDayPicker(!weekdayPicker);
   }
-
   const handleChangeRepeatedDay = (event, newSelected) => {
     let newState = Object.assign({}, currentEvent);
     newState.repeat = newSelected;
     setCurrentEvent(newState);
   }
-
-  const [timeAmount, setTimeAmount] = React.useState('');
-
-  const handleChangeSelector = (event) => {
-    setTimeAmount(event.target.value);
-  };
 
   const [currentEvent, setCurrentEvent] = useState(
   {
@@ -125,8 +106,6 @@ export default function ButtonComponents() {
     endDate: '',
     repeat: []
   });
-
-  const [weekdayPicker, toggleWeekDayPicker] = useState(false);
 
   const DayPicker = () => {
     var daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -143,6 +122,44 @@ export default function ButtonComponents() {
         ))}
       </ToggleButtonGroup>
     )
+  }
+
+  const [addExercises, toggleTESTPicker] = useState(false);
+  const handleAddExerciseToggle = () => {
+    toggleTESTPicker(!addExercises);
+  }
+
+  const addExerciseComp = () => {
+    return (
+      <div>
+      <Button
+            variant="contained"
+            color="primary"
+            className={classes.button}
+            size="large"
+            fullWidth //maybe
+            style={{
+              backgroundColor: '#416164', 
+            }}
+            endIcon={<AddIcon>Add Exercise</AddIcon>}
+            onClick={handleAddExerciseToggle} //here
+          >
+          Add Exercise
+        </Button><Button
+            variant="contained"
+            color="primary"
+            className={classes.button}
+            size="large"
+            fullWidth //maybe
+            style={{
+              backgroundColor: '#416164', 
+            }}
+            endIcon={<AddIcon>Add Exercise</AddIcon>}
+            onClick={handleAddExerciseToggle} //here
+          >
+          Add Exercise
+        </Button></div>
+    );
   }
 
   const AddWorkoutDialog = () =>{
@@ -221,12 +238,34 @@ export default function ButtonComponents() {
             rows={4}    
           />
 
+         <Button
+            variant="contained"
+            color="primary"
+            className={classes.button}
+            size="large"
+            fullWidth //maybe
+            style={{
+              backgroundColor: '#416164', 
+            }}
+            endIcon={<AddIcon>Add Exercise</AddIcon>}
+            onClick={handleAddExerciseToggle} //here
+          >
+          Add Exercise
+        </Button>
+  
+          {addExercises &&
+          <div>
+            <DialogContentText>Select from "MyExercises or create a new exercise" </DialogContentText>
+            <addExerciseComp />
+          </div>
+          }
+
         </DialogContent>
         <DialogActions>
           <Button onClick={handleWorkoutClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleWorkoutClose} color="primary">
+          <Button onClick={handleWorkoutClose} color="primary"> {/* LINK BUTTON */}
             Create Workout
           </Button>
         </DialogActions>
@@ -284,7 +323,7 @@ export default function ButtonComponents() {
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   value={timeAmount}
-                  onChange={handleChangeSelector}
+                  onChange={handleTimeUnitSelector}
                   label="time unit"
                 >
                   <MenuItem value="">
@@ -350,8 +389,8 @@ export default function ButtonComponents() {
           <Button onClick={handleExerciseClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleExerciseClose} color="primary">
-            Add Exercise
+          <Button onClick={handleExerciseClose} color="primary">{/* LINK BUTTON */}
+            Add Exercise 
           </Button>
         </DialogActions>
       </Dialog>
