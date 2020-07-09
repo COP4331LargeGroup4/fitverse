@@ -9,17 +9,10 @@ import {
   TextField,
   Button,
   Grid,
-  List,
-  ListItem,
-  ListItemText,
   Select,
-  ListSubheader,
-  IconButton,
-  Icon,
   InputLabel,
   FormControl,
   FormControlLabel,
-  FormLabel,
   Switch,
   MenuItem,
   makeStyles,
@@ -30,6 +23,16 @@ import Title from './Title';
 import 'date-fns';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
 import AddIcon from '@material-ui/icons/Add';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+import EditIcon from '@material-ui/icons/Edit';
+import ClearIcon from '@material-ui/icons/Clear';
+import CheckIcon from '@material-ui/icons/Check';
+import ImportExportIcon from '@material-ui/icons/ImportExport';
+import FirstPageIcon from '@material-ui/icons/FirstPage';
+import LastPageIcon from '@material-ui/icons/LastPage';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import MaterialTable, { MTableToolbar, MTablePagination } from 'material-table';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -124,41 +127,92 @@ export default function ButtonComponents() {
     )
   }
 
-  const [addExercises, toggleTESTPicker] = useState(false);
+  const [addExercises, toggleOpenAddEx] = useState(false);
   const handleAddExerciseToggle = () => {
-    toggleTESTPicker(!addExercises);
+    toggleOpenAddEx(!addExercises);
   }
 
-  const addExerciseComp = () => {
-    return (
-      <div>
-      <Button
-            variant="contained"
-            color="primary"
-            className={classes.button}
-            size="large"
-            fullWidth //maybe
-            style={{
-              backgroundColor: '#416164', 
-            }}
-            endIcon={<AddIcon>Add Exercise</AddIcon>}
-            onClick={handleAddExerciseToggle} //here
-          >
-          Add Exercise
-        </Button><Button
-            variant="contained"
-            color="primary"
-            className={classes.button}
-            size="large"
-            fullWidth //maybe
-            style={{
-              backgroundColor: '#416164', 
-            }}
-            endIcon={<AddIcon>Add Exercise</AddIcon>}
-            onClick={handleAddExerciseToggle} //here
-          >
-          Add Exercise
-        </Button></div>
+  const [tableState, setTableState] = React.useState({
+    columns: [
+      { title: 'Exercises', field: 'exercise' },
+    ],
+    data: [
+      { exercise: 'Pushups'},
+      { exercise: 'Sit-Ups'},
+    ],
+  });
+
+  const AddTable = () =>{
+    return(
+      <MaterialTable
+          components={{
+            Toolbar: props => (
+                <div style={{ backgroundColor: '#d0cdd7' }}>
+                    <MTableToolbar {...props} />
+                </div>
+            ),
+              Pagination: props => (
+                <div style={{ backgroundColor: '#d0cdd7' }}>
+                    <MTablePagination {...props} />
+                </div>
+            ), 
+          }}
+          options={{
+            search: false
+          }}
+          icons={{
+            Add: () => <AddCircleIcon/>,
+            Edit: () => <EditIcon/>,
+            Check: () => <CheckIcon/>,
+            Clear: () => <ClearIcon/>,
+            SortArrow:() => <ImportExportIcon/>,
+            NextPage:() => <NavigateNextIcon/>,
+            PreviousPage:() => <NavigateBeforeIcon/>,
+            FirstPage: () => <FirstPageIcon/>,
+            LastPage:()=> <LastPageIcon/>,
+          }}
+      title="Exercises"
+      columns={tableState.columns}
+      data={tableState.data}
+      editable={{
+        onRowAdd: (newData) =>
+          new Promise((resolve) => { // THIS WILL BE A SEARCH
+            setTimeout(() => {
+              resolve();
+              setTableState((prevState) => {
+                const data = [...prevState.data];
+                data.push(newData);
+                return { ...prevState, data };
+              });
+            }, 600);
+          }),
+        onRowUpdate: (newData, oldData) =>
+          new Promise((resolve) => {
+            setTimeout(() => {
+              resolve();
+              if (oldData) {
+                setTableState((prevState) => {
+                  const data = [...prevState.data];
+                  data[data.indexOf(oldData)] = newData;
+                  return { ...prevState, data };
+                });
+              }
+            }, 600);
+          }),
+          // We don't want delete
+        /*onRowDelete: (oldData) =>
+          new Promise((resolve) => {
+            setTimeout(() => {
+              resolve();
+              setTableState((prevState) => {
+                const data = [...prevState.data];
+                data.splice(data.indexOf(oldData), 1);
+                return { ...prevState, data };
+              });
+            }, 600);
+          }),*/
+      }}
+    />
     );
   }
 
@@ -255,8 +309,8 @@ export default function ButtonComponents() {
   
           {addExercises &&
           <div>
-            <DialogContentText>Select from "MyExercises or create a new exercise" </DialogContentText>
-            <addExerciseComp />
+            <DialogContentText></DialogContentText>
+            <AddTable />
           </div>
           }
 
@@ -413,3 +467,5 @@ export default function ButtonComponents() {
     </React.Fragment>
   );
 }
+
+
