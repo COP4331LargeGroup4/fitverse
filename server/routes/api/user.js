@@ -197,9 +197,9 @@ router.post('/resendVerification', async (req, res) => {
 		var emaildata = {
 			to: user.email,
 			from: senderemail,
-			subject: 'Fitverse password reset',
-			text: forgotPasswordText(user.firstName + ' ' + user.lastName, user.emailVerificationToken),
-			html: forgotPasswordEmail(user.firstName + ' ' + user.lastName, user.emailVerificationToken)
+			subject: 'Fitverse email verification',
+			text: verifyText(user.firstName + ' ' + user.lastName, user.emailVerificationToken),
+			html: verifyEmail(user.firstName + ' ' + user.lastName, user.emailVerificationToken)
 		};
 	
 		await smtpTransport.sendMail(emaildata);
