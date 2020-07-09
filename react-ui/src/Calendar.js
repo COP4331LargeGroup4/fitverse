@@ -223,7 +223,6 @@ function Calendar(props) {
                             <EditIcon />
                         </IconButton>
                     </DialogContent>
-
                     <DialogTitle id="form-dialog-title">{currentEvent.title}</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
@@ -269,13 +268,11 @@ function Calendar(props) {
 
                 {/* Edit modal */}
                 <Dialog open={editModal} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth={true} maxWidth={'xs'}>
-
                     <DialogContent style={{ marginBottom: -15 }}>
                         <IconButton onClick={handleClose} size='small' edge='end' aria-label="delete" className={classes.eventButtons}>
                             <CloseIcon />
                         </IconButton>
                     </DialogContent>
-
                     <DialogContent>
                         <TextField
                             autoFocus
@@ -286,7 +283,6 @@ function Calendar(props) {
                             defaultValue={currentEvent.title}
                             required
                         />
-
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
                                 disableToolbar
@@ -314,7 +310,6 @@ function Calendar(props) {
                                 label="Repeat weekly"
                             />
                         </DialogContentText>
-
                         {weekdayPicker &&
                             <div>
                                 {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -338,13 +333,11 @@ function Calendar(props) {
                             </div>
                         }
                     </DialogContent>
-
                     <DialogActions>
                         <Button onClick={handleSave} color="primary">
                             Save
                         </Button>
                     </DialogActions>
-
                 </Dialog>
 
             </Container>
