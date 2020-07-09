@@ -187,6 +187,11 @@ router.post('/resendVerification', async (req, res) => {
 
 		user = user[0];
 
+		if (user.emailVerified == true)
+		{
+			throw Error('Email already verified');
+		}
+
 		user = await User.findByIdAndUpdate(
 			{_id: user._id}, 
 			{
@@ -224,6 +229,11 @@ router.post('/verify', async (req, res) => {
 		{
 			throw Error('Token Expired');
 		} 
+
+		if (user.emailVerified == true)
+		{
+			throw Error('Email already verified');
+		}
 		
 		user = await User.findByIdAndUpdate(
 			{_id: user._id}, 
