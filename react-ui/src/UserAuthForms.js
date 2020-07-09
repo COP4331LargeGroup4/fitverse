@@ -300,7 +300,7 @@ export function SignIn() {
 						<Img src={Logo} style={{ maxWidth: "100%" }} />
 					</NavLink>
 					<Typography component="h1" variant="h5" style={{ marginTop: 20 }}>
-						Sign up
+						Sign in
 					</Typography>
 
 					<Formik
