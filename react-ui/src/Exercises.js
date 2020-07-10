@@ -1,28 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container'
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+import {
+    Container,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TablePagination,
+    TableRow,
+    TableSortLabel,
+    Toolbar,
+    Typography,
+    Paper,
+    IconButton,
+    Tooltip,
+    TextField,
+    Collapse,
+    Dialog,
+    DialogTitle,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    Radio,
+    RadioGroup,
+    Grid,
+    InputLabel,
+    FormControl,
+    FormControlLabel,
+    MenuItem,
+    Button,
+    Select
+} from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete';
 import SearchIcon from '@material-ui/icons/Search';
-import TextField from '@material-ui/core/TextField';
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit'
-import { useStyles } from './Navigation'
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import Collapse from '@material-ui/core/Collapse';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import { useStyles } from './Navigation'
 import WorkoutUtil from './util-api/workout-utl'
 
 const workoutUtil = new WorkoutUtil();
@@ -52,6 +68,8 @@ const useToolbarStyles = makeStyles((theme) => ({
         flex: '1 1 100%',
     },
 }));
+
+
 
 function Row(props) {
     const useRowStyles = makeStyles({
@@ -110,7 +128,14 @@ function Exercises() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [exercises, setExercises] = useState();
-    // const [emptyRows, setEmptyRows] = useState();
+    const [exerciseAddOpen, setExerciseAddOpen] = useState(false);
+    const handleExerciseOpen = () => {
+        setExerciseAddOpen(true);
+    };
+    const handleExerciseClose = () => {
+        setExerciseAddOpen(false);
+    };
+
 
     const getAllRows = () => {
         workoutUtil.getAllExercises()
@@ -179,6 +204,127 @@ function Exercises() {
         return rowsPerPage - Math.min(rowsPerPage, exercises.length - page * rowsPerPage)
     }
 
+    const AddExerciseDialog = () => {
+        return (
+            <Dialog open={exerciseAddOpen} onClose={handleExerciseClose} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">Add an Exercise</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        name="exerciseName"
+                        variant="outlined"
+                        required
+                        fullWidth
+                        type="name"
+                        id="exerciseName"
+                        label="Exercise Name"
+                    />
+                    <FormControl component="fieldset">
+                        <RadioGroup name="exerciseType">
+                            <Grid container spacing={5}>
+                                <Grid item>
+                                    <FormControlLabel value="Cardio" control={<Radio />} label="Cardio" />
+                                </Grid>
+                                <Grid item>
+                                    <FormControlLabel value="Strength" control={<Radio />} label="Strength" />
+                                </Grid>
+                            </Grid>
+                        </RadioGroup>
+                    </FormControl>
+                    <Container maxWidth="lg" className={classes.container} style={{ padding: 0, marginTop: 0 }}>
+                        <Grid container spacing={3}>
+                            <Grid item>
+                                <TextField
+                                    margin="dense"
+                                    name="time"
+                                    variant="outlined"
+                                    fullWidth
+                                    id="amountTime"
+                                    label="Time Amount"
+                                />
+                            </Grid>
+                            <Grid item>
+                                <FormControl variant="outlined" margin="dense" className={classes.formControl}>
+                                    <InputLabel id="timeUnitLabel">time unit</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        // value={timeAmount}
+                                        // onChange={handleTimeUnitSelector}
+                                        label="time unit"
+                                    >
+                                        <MenuItem value="">
+                                            <em>None</em>
+                                        </MenuItem>
+                                        <MenuItem value={10}>seconds</MenuItem>
+                                        <MenuItem value={20}>minutes</MenuItem>
+                                        <MenuItem value={30}>hours</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                        </Grid>
+                    </Container>
+                    <Container maxWidth="lg" className={classes.container} style={{ padding: 0 }}>
+                        <Grid container spacing={3}>
+                            <Grid item>
+                                <TextField
+                                    margin="dense"
+                                    name="sets"
+                                    variant="outlined"
+                                    fullWidth
+                                    type="sets"
+                                    id="numSets"
+                                    label="# Sets"
+                                />
+                            </Grid>
+                            <Grid item>
+                                <TextField
+                                    margin="dense"
+                                    name="reps"
+                                    variant="outlined"
+                                    fullWidth
+                                    type="reps"
+                                    id="numReps"
+                                    label="# Reps"
+                                />
+                            </Grid>
+                        </Grid>
+                    </Container>
+
+                    <TextField
+                        margin="dense"
+                        name="weights"
+                        variant="outlined"
+                        id="amountWeight"
+                        label="Weight Amount (lbs)"
+                    />
+                    <TextField
+                        margin="dense"
+                        marginTop="2"
+                        name="myNotes"
+                        variant="outlined"
+                        fullWidth
+                        type="goals"
+                        id="outlined-multiline-static"
+                        label="Additional notes"
+                        multiline
+                        rows={4}
+                    />
+
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleExerciseClose} color="primary">
+                        Cancel
+              </Button>
+                    <Button onClick={handleExerciseClose} color="primary">{/* LINK BUTTON */}
+                Add Exercise
+              </Button>
+                </DialogActions>
+            </Dialog>
+        );
+    }
+
     // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
     return (
@@ -198,7 +344,7 @@ function Exercises() {
                                 // size="small"
                                 variant="outlined"
                                 InputProps={{
-                                    endAdornment: (<IconButton type="submit" className={classes.iconButton} aria-label="search" style={{padding: 5}}>
+                                    endAdornment: (<IconButton type="submit" className={classes.iconButton} aria-label="search" style={{ padding: 5 }}>
                                         <SearchIcon />
                                     </IconButton>)
                                 }}
@@ -206,10 +352,11 @@ function Exercises() {
                         </Typography>
 
                         <Tooltip title="Add Exercise">
-                            <IconButton aria-label="add">
+                            <IconButton aria-label="add" onClick={handleExerciseOpen}>
                                 <AddIcon />
                             </IconButton>
                         </Tooltip>
+                        <AddExerciseDialog />
 
                     </Toolbar>
 
