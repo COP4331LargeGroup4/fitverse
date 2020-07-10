@@ -122,7 +122,7 @@ router.post('/read', async (req, res) => {
 							return exercise;
 						});
 					Promise.all(exercises).then(result => {
-						retWorkout['exercises'] = result;
+						retWorkout['exercises'] = _.without(result, null);
 						res.status(200).json({ workout: retWorkout });
 					});
 
@@ -176,7 +176,7 @@ router.post('/readAll', async (req, res) => {
 								});
 							var promises =
 								Promise.all(exercises).then(result => {
-									retWorkout['exercises'] = result;
+									retWorkout['exercises'] = _.without(result, null);
 									return retWorkout;
 								});
 
@@ -400,15 +400,15 @@ router.post('/getDoneExercises', async (req, res) => {
 					var completedExercises = await CompletedExercises.findOne({ workout: workout, date: date });
 
 					if (!completedExercises) {
-						res.status(200).json({doneExercises : []});
-					} 
-					
+						res.status(200).json({ doneExercises: [] });
+					}
+
 					if (completedExercises.userId != authData._id) {
 						httpErr = 403;
 						throw Error('Invalid credentials');
-					} 
+					}
 
-					res.status(200).json({doneExercises : completedExercises.exercises});
+					res.status(200).json({ doneExercises: completedExercises.exercises });
 
 				} catch (e) {
 					res.status(httpErr).json({ err: e.message });
