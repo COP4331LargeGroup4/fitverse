@@ -7,7 +7,7 @@ import Dashboard from './Dashboard';
 import InteriorLayout from './InteriorLayout'
 import Calendar from './Calendar';
 import Profile from './Profile'
-import { SignIn, SignUp, ResetPassword } from './UserAuthForms';
+import { SignIn, SignUp, ResetPassword, VerifyEmail } from './UserAuthForms';
 import Terms from './Terms';
 import PrivacyPolicy from './PrivacyPolicy';
 import Exercises from './Exercises';
@@ -45,6 +45,7 @@ function App() {
 				<Route exact path='/resetpassword' component={() => <ResetPassword />} />
 				<Route exact path='/terms' component={() => <Terms />} />
 				<Route exact path='/privacy' component={() => <PrivacyPolicy />} />
+				<Route exact path='/verify' component={() => <VerifyEmail />} />
 
 				{/* interior pages */}
 				{Object.keys(pages).map((key) => {

@@ -25,12 +25,7 @@ router.post('/create', async (req, res) => {
 					res.status(403).json()
 				}
 			} else {
-
 				try {
-
-					console.log(name);
-					console.log(isCardio);
-					
 					if (!name || (isCardio == undefined)) {
 						httpErr = 400;
 						throw Error('Missing required fields');
@@ -61,8 +56,6 @@ router.post('/create', async (req, res) => {
 							notes
 						})
 					}
-
-					
 
 					const savedExercise = await newExercise.save();
 					if (!savedExercise) {
@@ -117,10 +110,10 @@ router.post('/read', async (req, res) => {
 						httpErr = 403;
 						throw Error('Invalid credentials')
 					}
-					
+
 					delete exercise['userId'];
 
-					res.status(200).json({exercise});
+					res.status(200).json({ exercise });
 
 				} catch (e) {
 					res.status(httpErr).json({ err: e.message });
@@ -255,7 +248,7 @@ router.post('/delete', async (req, res) => {
 						function (err) {
 							res.status(200).json();
 						});
-					
+
 					// TODO Delete all references of the id from all workouts
 
 				} catch (e) {
