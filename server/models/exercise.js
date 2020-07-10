@@ -11,6 +11,11 @@ const ExerciseSchema = new Schema({
 		type: String,
 		required: true,
 	},
+	dateCreated: {
+		type: Date,
+		required: true,
+		default: Date.now
+	},
 	sets: {
 		type: String
 	},

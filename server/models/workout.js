@@ -29,6 +29,15 @@ const WorkoutSchema = new Schema({
 	},
 	notes: {
 		type: String
+	},
+	deviatedWorkouts: {
+		type: [String]
+	},
+	deletedDates: {
+		type: [Date]
+	},
+	doneDates: {
+		type: [Date]
 	}
 });
 
