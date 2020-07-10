@@ -15,7 +15,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-    maxWidth: 360,
+    borderRadius: 8,
     backgroundColor: theme.palette.background.paper,
   },
 }));
@@ -51,6 +51,7 @@ export default function DailyChecklist() {
                 tabIndex={-1}
                 disableRipple
                 inputProps={{ 'aria-labelledby': labelId }}
+                color = "primary"
               />
             </ListItemIcon>
             <ListItemText id={labelId} primary={`Line item ${value + 1}`} />

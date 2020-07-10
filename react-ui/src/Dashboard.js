@@ -50,7 +50,7 @@ export function Dashboard() {
               <Typography component="h3" variant="h6" color="inherit" noWrap className={classes.title}>
                 Today's Workout
               </Typography>
-            <DailyChecklist style={{marginLeft: "2"}}/>
+            <DailyChecklist />
             </Paper>
           </Grid>
           <Grid item xs={4} md={4} lg={4}>
