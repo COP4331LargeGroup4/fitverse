@@ -54,9 +54,9 @@ export default function DailyChecklist() {
                 color = "primary"
               />
             </ListItemIcon>
-            <ListItemText id={labelId} primary={`Line item ${value + 1}`} />
+            <ListItemText id={labelId} primary={`Exercise ${value + 1}`} />
             <ListItemSecondaryAction>
-              <IconButton edge="end" aria-label="comments">
+              <IconButton edge="end" aria-label="comments" > {/*onClick={handleEditOpen}*/}
                 <EditIcon />
               </IconButton>
               <IconButton edge="end" aria-label="comments">
