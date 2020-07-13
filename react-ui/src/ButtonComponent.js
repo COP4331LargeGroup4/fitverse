@@ -82,8 +82,14 @@ export default function ButtonComponents() {
   };
 
   const [value, setValue] = React.useState('Cardio');
+  const [isCardio, setIsCardio] = React.useState(true);
   const handleChangeRadio = (event) => {
     setValue(event.target.value);
+    if(event.target.value == 'Cardio'){
+      setIsCardio(true);
+    }else{
+      setIsCardio(false);
+    }
   };
  
   const [timeAmount, setTimeAmount] = React.useState('');
@@ -348,8 +354,8 @@ export default function ButtonComponents() {
           />
           <FormControl component="fieldset">
             <RadioGroup name="exerciseType" value={value} onChange={handleChangeRadio}>
-              <Grid container spacing={5}>
-                <Grid item>
+              <Grid container spacing={3}>
+                <Grid item >
                   <FormControlLabel value="Cardio" control={<Radio />} label="Cardio"/>
                 </Grid>
                 <Grid item>
@@ -372,7 +378,7 @@ export default function ButtonComponents() {
               </Grid>   
               <Grid item>
               <FormControl variant="outlined" margin="dense" className={classes.formControl}>
-                <InputLabel id="timeUnitLabel">time unit</InputLabel>
+                <InputLabel id="timeUnitLabel" >time unit</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
@@ -402,6 +408,7 @@ export default function ButtonComponents() {
                   type="sets"
                   id="numSets"
                   label="# Sets"
+                  disabled={isCardio}
                 />
               </Grid>
               <Grid item>
@@ -413,6 +420,7 @@ export default function ButtonComponents() {
                   type="reps"
                   id="numReps"
                   label="# Reps"
+                  disabled={isCardio}
                 />
               </Grid>
            </Grid> 
