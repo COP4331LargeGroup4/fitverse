@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DailyChecklist() {
   const classes = useStyles();
-  const [checked, setChecked] = React.useState([0]);
+  const [checked, setChecked] = React.useState([-1]); // starts it off with a check at index.
 
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
