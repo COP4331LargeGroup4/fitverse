@@ -59,12 +59,6 @@ export default class WorkoutUtil {
         var response = await axios.post("/api/exercise/create", {
             token: localStorage.getItem('jwt'),
             name: object.name,
-            sets: object.sets,
-            reps: object.reps,
-            weight: object.weight,
-            time: object.time,
-            distance: object.distance,
-            isCardio: object.isCardio,
             notes: object.notes
         }, {
             headers: {
@@ -81,12 +75,6 @@ export default class WorkoutUtil {
             token: localStorage.getItem('jwt'),
             id: id,
             name: object.name,
-            sets: object.sets,
-            reps: object.reps,
-            weight: object.weight,
-            time: object.time,
-            distance: object.distance,
-            isCardio: object.isCardio,
             notes: object.notes
         }, {
             headers: {

@@ -22,20 +22,14 @@ import {
     DialogActions,
     DialogContent,
     DialogContentText,
-    Radio,
-    RadioGroup,
-    Grid,
-    InputLabel,
-    FormControl,
-    FormControlLabel,
-    MenuItem,
     Button,
-    Select
 } from '@material-ui/core'
+import moment from 'moment'
 import DeleteIcon from '@material-ui/icons/Delete';
 import SearchIcon from '@material-ui/icons/Search';
 import AddIcon from '@material-ui/icons/Add';
-import EditIcon from '@material-ui/icons/Edit'
+import EditIcon from '@material-ui/icons/Edit';
+import CloseIcon from '@material-ui/icons/Close'
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import { useStyles } from './Navigation'
@@ -49,26 +43,6 @@ const headCells = [
     { id: 'actions', numeric: true, disablePadding: false, sortable: false, label: '' }
 ];
 
-const useToolbarStyles = makeStyles((theme) => ({
-    root: {
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(1),
-    },
-    highlight:
-        theme.palette.type === 'light'
-            ? {
-                color: theme.palette.secondary.main,
-                backgroundColor: 'blue',
-            }
-            : {
-                color: theme.palette.text.primary,
-                backgroundColor: theme.palette.secondary.dark,
-            },
-    title: {
-        flex: '1 1 100%',
-    },
-}));
-
 function Row(props) {
     const useRowStyles = makeStyles({
         root: {
@@ -80,13 +54,20 @@ function Row(props) {
 
     const { row } = props;
     const [collapseOpen, setCollapseOpen] = useState(false);
-    const classes = useRowStyles();
-    const forceUpdate = props.update;
+    const rowClasses = useRowStyles();
+    const classes = useStyles();
     const [deleteOpen, setDeleteOpen] = useState(false);
+    const [exerciseEditOpen, setExerciseEditOpen] = useState(false);
+
+    const handleExerciseEditOpen = () => {
+        setExerciseEditOpen(true);
+    };
+
+    const handleExerciseEditClose = () => {
+        setExerciseEditOpen(false);
+    };
 
     const handleDeleteOpen = () => {
-        console.log(row);
-        console.log(deleteOpen)
         setDeleteOpen(true);
     };
 
@@ -95,9 +76,67 @@ function Row(props) {
     };
 
     const handleDeleteExercise = (id) => {
-        workoutUtil.deleteExercise(id).then(res => console.log(res));
-        handleDeleteClose();
-        window.location.reload(false);
+        workoutUtil.deleteExercise(id).then(res => {
+            handleDeleteClose();
+            window.location.reload(false);
+        });
+    }
+
+    const updateExercise = (id) => {
+        workoutUtil.updateExercise(id,
+            {
+                name: document.getElementById('edit-exercise-name').value,
+                notes: document.getElementById('edit-exercise-notes').value
+            }
+        ).then(res => {
+            handleExerciseEditClose();
+            window.location.reload(false);
+        })
+    }
+
+    const EditDialog = (props) => {
+        const { exercise } = props;
+
+        return (
+            <Dialog open={exerciseEditOpen} onClose={handleExerciseEditClose} aria-labelledby="form-dialog-title">
+                <DialogContent style={{ marginBottom: -25 }}>
+                    <IconButton onClick={handleExerciseEditClose} size='small' edge='end' aria-label="delete" className={classes.eventButtons}>
+                        <CloseIcon />
+                    </IconButton>
+                </DialogContent>
+                <DialogTitle id="form-dialog-title">Edit exercise</DialogTitle>
+                <DialogContent style={{ marginTop: -10 }}>
+                    <TextField
+                        margin="dense"
+                        variant="outlined"
+                        required
+                        fullWidth
+                        type="name"
+                        id="edit-exercise-name"
+                        defaultValue={exercise.name}
+                        label="Exercise name"
+                        style={{ marginBottom: 10 }}
+                    />
+                    <TextField
+                        margin="dense"
+                        name="myNotes"
+                        variant="outlined"
+                        fullWidth
+                        type="goals"
+                        id="edit-exercise-notes"
+                        label="Notes"
+                        defaultValue={exercise.notes}
+                        multiline
+                        rows={4}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={function () { updateExercise(exercise.id) }} color="primary">
+                        Save
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 
     const DeleteAlert = (props) => {
@@ -120,7 +159,7 @@ function Row(props) {
                         <Button onClick={handleDeleteClose} color="primary">
                             Cancel
                         </Button>
-                        <Button onClick={function(){handleDeleteExercise(exercise.id)}} style={{ color: 'red' }} autoFocus>
+                        <Button onClick={function () { handleDeleteExercise(exercise.id) }} style={{ color: 'red' }} autoFocus>
                             Delete
                         </Button>
                     </DialogActions>
@@ -128,10 +167,10 @@ function Row(props) {
             </div>
         );
     }
-    
+
     return (
         <React.Fragment>
-            <TableRow className={classes.root}>
+            <TableRow className={rowClasses.root}>
                 <TableCell>
                     <IconButton aria-label="expand row" size="small" onClick={() => setCollapseOpen(!collapseOpen)}>
                         {collapseOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -148,17 +187,20 @@ function Row(props) {
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="Edit">
-                        <IconButton aria-label="edit" size='small'>
+                        <IconButton aria-label="edit" size='small' onClick={handleExerciseEditOpen}>
                             <EditIcon />
                         </IconButton>
                     </Tooltip>
                     <DeleteAlert exercise={row} />
+                    <EditDialog exercise={row} />
                 </TableCell>
             </TableRow>
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                     <Collapse in={collapseOpen} timeout="auto" unmountOnExit>
-                        hello
+                        <div style={{ paddingLeft: 19, paddingBottom: 15 }}>
+                            Notes: {row.notes}
+                        </div>
                     </Collapse>
                 </TableCell>
             </TableRow>
@@ -168,15 +210,12 @@ function Row(props) {
 
 function Exercises() {
     const classes = useStyles();
-    const [open, setOpen] = useState(false);
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('calories');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [exercises, setExercises] = useState();
     const [exerciseAddOpen, setExerciseAddOpen] = useState(false);
-
-    const forceUpdate = useForceUpdate();
 
     const handleExerciseOpen = () => {
         setExerciseAddOpen(true);
@@ -193,7 +232,7 @@ function Exercises() {
                     return {
                         id: exercise._id,
                         name: exercise.name,
-                        date: exercise.date,
+                        date: moment(exercise.dateCreated).format('YYYY-MM-DD'),
                         notes: exercise.notes
                     }
                 }))
@@ -232,7 +271,6 @@ function Exercises() {
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
-        console.log(exercises)
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
     };
@@ -254,11 +292,28 @@ function Exercises() {
         return rowsPerPage - Math.min(rowsPerPage, exercises.length - page * rowsPerPage)
     }
 
+    const createExercise = () => {
+        workoutUtil.createExercise(
+            {
+                name: document.getElementById('new-exercise-name').value,
+                notes: document.getElementById('new-exercise-notes').value
+            }
+        ).then(res => {
+            handleExerciseClose();
+            window.location.reload(false);
+        })
+    }
+
     const AddExerciseDialog = () => {
         return (
             <Dialog open={exerciseAddOpen} onClose={handleExerciseClose} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">Add an Exercise</DialogTitle>
-                <DialogContent>
+                <DialogContent style={{ marginBottom: -25 }}>
+                    <IconButton onClick={handleExerciseClose} size='small' edge='end' aria-label="delete" className={classes.eventButtons}>
+                        <CloseIcon />
+                    </IconButton>
+                </DialogContent>
+                <DialogTitle id="form-dialog-title">Add an exercise</DialogTitle>
+                <DialogContent style={{ marginTop: -10 }}>
                     <TextField
                         autoFocus
                         margin="dense"
@@ -267,117 +322,32 @@ function Exercises() {
                         required
                         fullWidth
                         type="name"
-                        id="exerciseName"
-                        label="Exercise Name"
-                    />
-                    <FormControl component="fieldset">
-                        <RadioGroup name="exerciseType">
-                            <Grid container spacing={5}>
-                                <Grid item>
-                                    <FormControlLabel value="Cardio" control={<Radio />} label="Cardio" />
-                                </Grid>
-                                <Grid item>
-                                    <FormControlLabel value="Strength" control={<Radio />} label="Strength" />
-                                </Grid>
-                            </Grid>
-                        </RadioGroup>
-                    </FormControl>
-                    <Container maxWidth="lg" className={classes.container} style={{ padding: 0, marginTop: 0 }}>
-                        <Grid container spacing={3}>
-                            <Grid item>
-                                <TextField
-                                    margin="dense"
-                                    name="time"
-                                    variant="outlined"
-                                    fullWidth
-                                    id="amountTime"
-                                    label="Time Amount"
-                                />
-                            </Grid>
-                            <Grid item>
-                                <FormControl variant="outlined" margin="dense" className={classes.formControl}>
-                                    <InputLabel id="timeUnitLabel">time unit</InputLabel>
-                                    <Select
-                                        labelId="demo-simple-select-label"
-                                        id="demo-simple-select"
-                                        // value={timeAmount}
-                                        // onChange={handleTimeUnitSelector}
-                                        label="time unit"
-                                    >
-                                        <MenuItem value="">
-                                            <em>None</em>
-                                        </MenuItem>
-                                        <MenuItem value={10}>seconds</MenuItem>
-                                        <MenuItem value={20}>minutes</MenuItem>
-                                        <MenuItem value={30}>hours</MenuItem>
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                        </Grid>
-                    </Container>
-                    <Container maxWidth="lg" className={classes.container} style={{ padding: 0 }}>
-                        <Grid container spacing={3}>
-                            <Grid item>
-                                <TextField
-                                    margin="dense"
-                                    name="sets"
-                                    variant="outlined"
-                                    fullWidth
-                                    type="sets"
-                                    id="numSets"
-                                    label="# Sets"
-                                />
-                            </Grid>
-                            <Grid item>
-                                <TextField
-                                    margin="dense"
-                                    name="reps"
-                                    variant="outlined"
-                                    fullWidth
-                                    type="reps"
-                                    id="numReps"
-                                    label="# Reps"
-                                />
-                            </Grid>
-                        </Grid>
-                    </Container>
-
-                    <TextField
-                        margin="dense"
-                        name="weights"
-                        variant="outlined"
-                        id="amountWeight"
-                        label="Weight Amount (lbs)"
+                        id="new-exercise-name"
+                        label="Exercise name"
+                        style={{ marginBottom: 10 }}
                     />
                     <TextField
                         margin="dense"
-                        marginTop="2"
                         name="myNotes"
                         variant="outlined"
                         fullWidth
                         type="goals"
-                        id="outlined-multiline-static"
-                        label="Additional notes"
+                        id="new-exercise-notes"
+                        label="Notes"
                         multiline
                         rows={4}
+                    // value={newNotes}
+                    // onChange={handleNewNotes}
                     />
-
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleExerciseClose} color="primary">
-                        Cancel
-              </Button>
-                    <Button onClick={handleExerciseClose} color="primary">{/* LINK BUTTON */}
-                Add Exercise
-              </Button>
+                    <Button onClick={createExercise} color="primary">
+                        Add Exercise
+                    </Button>
                 </DialogActions>
             </Dialog>
         );
     }
-
-
-
-    // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
     return (
         <div className={classes.content}>
@@ -445,7 +415,7 @@ function Exercises() {
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((row, index) => {
                                         return (
-                                            <Row key={index} row={row} update={forceUpdate} />
+                                            <Row key={index} row={row} />
                                         );
                                     })}
 
