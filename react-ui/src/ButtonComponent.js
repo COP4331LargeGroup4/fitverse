@@ -425,14 +425,32 @@ export default function ButtonComponents() {
               </Grid>
            </Grid> 
           </Container>  
-
-          <TextField
-            margin="dense"
-            name="weights"
-            variant="outlined"    
-            id="amountWeight"
-            label="Weight Amount (lbs)"
-          />
+          <Container maxWidth="lg" className={classes.container} style={{padding: 0}}>
+            <Grid container spacing={3}>
+              <Grid item>
+                <TextField
+                  margin="dense"
+                  name="weights"
+                  variant="outlined"   
+                  fullWidth 
+                  id="amountWeight"
+                  label="Weight Amount (lbs)"
+                />
+              </Grid>
+              <Grid item>
+                <TextField
+                  margin="dense"
+                  name="distance"
+                  variant="outlined"
+                  fullWidth
+                  id="distance"
+                  label="Distance (mi)"
+                  disabled={!isCardio}
+                />
+              </Grid>
+           </Grid> 
+          </Container>
+         
           <TextField
             margin="dense"
             marginTop="2"
