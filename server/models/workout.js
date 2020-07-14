@@ -3,29 +3,42 @@ const Schema = mongoose.Schema;
 
 // create schema
 const WorkoutSchema = new Schema({
-	name:{
-		type:String,
+	userId: {
+		type: String,
+		required: true
+	},
+	name: {
+		type: String,
 		required: true,
-		unique: true
 	},
-	exercises:{
-		type: Array,
+	exercises: {
+		type: [String],
+		required: true,
+		default: []
+	},
+	weekly: {
+		type: [Number],
 		required: true
 	},
-	weekly:{
-		type: Int16Array,
+	startDate: {
+		type: Date,
 		required: true
 	},
-	startDate:{
-		type : String,
-		required : true
+	endDate: {
+		type: Date,
 	},
-	endDate:{
-		type : String,
-	},
-	notes:{
+	notes: {
 		type: String
+	},
+	deviatedWorkouts: {
+		type: [String]
+	},
+	deletedDates: {
+		type: [Date]
+	},
+	doneDates: {
+		type: [Date]
 	}
 });
 
-module.exports = User = mongoose.model('workout', UserSchema);
+module.exports = Workout = mongoose.model('workout', WorkoutSchema);

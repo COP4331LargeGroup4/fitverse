@@ -7,10 +7,10 @@ import Dashboard from './Dashboard';
 import InteriorLayout from './InteriorLayout'
 import Calendar from './Calendar';
 import Profile from './Profile'
-import MyExercises from './MyExercises';
-import { SignIn, SignUp, ResetPassword } from './UserAuthForms';
+import { SignIn, SignUp, ResetPassword, VerifyEmail } from './UserAuthForms';
 import Terms from './Terms';
 import PrivacyPolicy from './PrivacyPolicy';
+import Exercises from './Exercises';
 
 const pages = {
 	dashboard: {
@@ -23,16 +23,16 @@ const pages = {
 		path: "/calendar",
 		page: <Calendar />
 	},
+	exercises: {
+		title: "My Exercises",
+		path: "/exercises",
+		page: <Exercises />
+	},
 	profile: {
 		title: "Profile",
 		path: "/profile",
 		page: <Profile />
-	},
-	exercises: {
-		title: "My Exercises",
-		path: "/exercises",
-		page: <MyExercises />
-	},
+	}
 }
 
 function App() {
@@ -45,6 +45,7 @@ function App() {
 				<Route exact path='/resetpassword' component={() => <ResetPassword />} />
 				<Route exact path='/terms' component={() => <Terms />} />
 				<Route exact path='/privacy' component={() => <PrivacyPolicy />} />
+				<Route exact path='/verify' component={() => <VerifyEmail />} />
 
 				{/* interior pages */}
 				{Object.keys(pages).map((key) => {

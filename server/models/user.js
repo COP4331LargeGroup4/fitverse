@@ -20,10 +20,26 @@ const UserSchema = new Schema({
 		type: String,
 		required: true
 	},
-	emailVerifed:{
+	emailVerified:{
 		type: Boolean,
 		required: true
+	},
+	passwordResetToken:{
+		type: String,
+		required: false
+	},
+	passwordResetTokenExp:{
+		type: Number,
+		required: false
+	},
+	emailVerificationToken:{
+		type: String,
+		required: false
+	},
+	emailVerificationTokenExp:{
+		type: Number,
+		required: false
 	}
 });
 
-module.exports = User = mongoose.model('user', UserSchema);
+module.exports = mongoose.model('user', UserSchema);
