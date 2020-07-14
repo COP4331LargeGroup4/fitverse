@@ -12,14 +12,19 @@ import {
     List,
     ListItem,
     ListItemText,
-    ListSubheader,
     IconButton,
-    FormControlLabel,
     Switch,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    Checkbox,
+    FormControlLabel,
+    Typography,
 } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 import CloseIcon from '@material-ui/icons/Close';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import moment from 'moment'
@@ -30,8 +35,9 @@ import {
     KeyboardDatePicker,
 } from '@material-ui/pickers';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
+import WorkoutUtil from './util-api/workout-utl'
 
-
+const workoutUtil = new WorkoutUtil();
 
 function Calendar(props) {
     const classes = useStyles();
@@ -39,63 +45,80 @@ function Calendar(props) {
     const [editModal, toggleEditModal] = useState(false);
     const [currentEvent, setCurrentEvent] = useState(
         {
+            id: '',
             title: '',
             startDate: '',
             endDate: '',
-            repeat: []
+            repeat: [],
+            exercises: []
         });
     const [weekdayPicker, toggleWeekDayPicker] = useState(false);
+    const [events, setEvents] = useState();
 
-    var myEventsList = [
-        {
-            title: 'Chest and Triceps',
-            date: '2020-07-06',
-            startRecur: currentEvent.repeat.length ? '2020-07-06' : '',
-            endRecur: '',
-            daysOfWeek: currentEvent.repeat.length ? currentEvent.repeat : ''
-        },
-        {
-            title: 'Back and Biceps',
-            date: '2020-07-03',
-            startRecur: currentEvent.repeat.length ? '2020-06-23' : '',
-            endRecur: '',
-            daysOfWeek: currentEvent.repeat.length ? currentEvent.repeat : ''
-        },
-        {
-            title: 'Cardio',
-            date: '2020-07-12',
-            startRecur: currentEvent.repeat.length ? '2020-06-23' : '',
-            endRecur: '',
-            daysOfWeek: currentEvent.repeat.length ? currentEvent.repeat : ''
-        },
-    ]
+    const getAllEvents = async () => {
+        var workouts = await workoutUtil.getAllWorkouts();
+        var myEventsList = workouts.workouts.map(workout => {
+            if (workout.weekly.length) {
+                return {
+                    id: workout._id,
+                    title: workout.name,
+                    startRecur: moment(workout.startDate).utc().format('YYYY-MM-DD'),
+                    endRecur: workout.endDate ? moment(workout.endDate).utc().format('YYYY-MM-DD') : undefined,
+                    daysOfWeek: workout.weekly,
+                    exercises: workout.exercises
+                }
+            }
+            return {
+                id: workout._id,
+                title: workout.name,
+                date: moment(workout.startDate).utc().format('YYYY-MM-DD'),
+                exercises: workout.exercises
+            };
+        })
 
-    const [events, setEvents] = useState(myEventsList);
+        console.log(myEventsList)
+        setEvents(myEventsList)
+        // console.log(events)
+    }
+
 
     useEffect(() => {
-        var index = myEventsList.map(e => e.title).indexOf(currentEvent.title);
-        if (index !== -1) {
-            myEventsList[index].startRecur = currentEvent.repeat.length > 0 ? '2020-06-23' : '';
-            myEventsList[index].date = currentEvent.repeat.length > 0 ? undefined : '2020-06-23';
-            myEventsList[index].daysOfWeek = currentEvent.repeat.length > 0 ? currentEvent.repeat : undefined;
-        }
-    });
+        // var index = myEventsList.map(e => e.title).indexOf(currentEvent.title);
+        // if (index !== -1) {
+        //     myEventsList[index].startRecur = currentEvent.repeat.length > 0 ? '2020-06-23' : '';
+        //     myEventsList[index].date = currentEvent.repeat.length > 0 ? undefined : '2020-06-23';
+        //     myEventsList[index].daysOfWeek = currentEvent.repeat.length > 0 ? currentEvent.repeat : undefined;
+        // }
+        getAllEvents();
+    }, []);
 
     const handleOpen = (event, el) => {
-        var dayOfWeek = event.event._instance.range.end.getDay();
-        var month = event.event._instance.range.end.getMonth() + 1;
-        var dayOfMonth = event.event._instance.range.end.getDate();
-        var year = event.event._instance.range.end.getFullYear();
+        if (event.event._def.publicId === currentEvent.id) {
+            let month = event.event._instance.range.end.getMonth() + 1;
+            let dayOfMonth = event.event._instance.range.end.getDate();
+            let year = event.event._instance.range.end.getFullYear();
+            let date = moment(year + " " + month + " " + dayOfMonth).format('YYYY-MM-DD');
+            let newState = Object.assign({}, currentEvent);
+            newState.startDate = date;
+            setCurrentEvent(newState);
+            toggleReadModal(true);
+            return;
+        }
 
-        var date = moment(year + " " + month + " " + dayOfMonth).format('YYYY-MM-DD');
-
+        let currentWorkout = events.find(x => x.id === event.event._def.publicId);
+        let month = event.event._instance.range.end.getMonth() + 1;
+        let dayOfMonth = event.event._instance.range.end.getDate();
+        let year = event.event._instance.range.end.getFullYear();
+        let date = moment(year + " " + month + " " + dayOfMonth).format('YYYY-MM-DD');
         let newState = Object.assign({}, currentEvent);
+        newState.id = event.event._def.publicId;
         newState.title = event.event._def.title;
         newState.startDate = date;
-        console.log(date)
+        newState.exercises = currentWorkout.exercises;
 
         setCurrentEvent(newState);
         toggleReadModal(true);
+
     };
 
     const handleClose = () => {
@@ -135,7 +158,7 @@ function Calendar(props) {
     }
 
     const handleSave = () => {
-        setEvents(myEventsList);
+        // setEvents(myEventsList);
         handleClose();
     }
 
@@ -158,19 +181,20 @@ function Calendar(props) {
         )
     }
 
+
     return (
-        <div className={classes.content}>
+        <div className={props.dashboard ? undefined : classes.content}>
+
             <div className={props.dashboard ? undefined : classes.appBarSpacer} />
-            <Container maxWidth="lg" className={classes.container}>
+
+            <Container maxWidth="lg" className={props.dashboard ? undefined : classes.container}>
+
                 {props.dashboard ?
                     <FullCalendar
                         initialView="dayGridWeek"
-                        // firstDay='1'
-                        // locale='en'
-                        // firstDay='1'
                         plugins={[dayGridPlugin]}
-                        // headerToolbar={false}
-                        contentHeight={150}
+                        headerToolbar={false}
+                        contentHeight={145}
                         eventClassNames={classes.events}
                         events={events}
                         eventClick={(event, el) => handleOpen(event, el)}
@@ -184,8 +208,10 @@ function Calendar(props) {
                         eventClick={(event, el) => handleOpen(event, el)}
                     />
                 }
+
                 {/* Read only modal */}
                 <Dialog open={readModal} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth={true} maxWidth={'xs'}>
+
                     <DialogContent style={{ marginBottom: -15 }}>
                         <IconButton onClick={handleClose} size='small' edge='end' aria-label="delete" className={classes.eventButtons}>
                             <CloseIcon />
@@ -203,15 +229,42 @@ function Calendar(props) {
                             {moment(currentEvent.startDate).format('dddd, MMMM DD')}
                         </DialogContentText>
                         <List>
-                            Excercises
+                            Exercises
+                            {currentEvent.exercises.length ? currentEvent.exercises.map((exercise, key) => (
+                                exercise &&
+                            <Accordion key={key}>
+                                <AccordionSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                    aria-label="Expand"
+                                    aria-controls="additional-actions1-content"
+                                    id="additional-actions1-header"
+                                >
+                                    <FormControlLabel
+                                        aria-label="Acknowledge"
+                                        onClick={(event) => event.stopPropagation()}
+                                        onFocus={(event) => event.stopPropagation()}
+                                        control={<Checkbox color='primary' />}
+                                        label={exercise.name}
+                                    />
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <Typography color="textSecondary">
+                                        {exercise.notes}
+                                    </Typography>
+                                </AccordionDetails>
+                            </Accordion>
+                        )) : <ListItem><ListItemText primary="Add exercises to this workout to view them here"></ListItemText></ListItem>}
+
                         </List>
 
                     </DialogContent>
+
                     <DialogActions>
-                        <Button onClick={handleClose} color="primary">
+                        <Button onClick={handleClose} color="primary" disabled={!moment(currentEvent.startDate).isSameOrBefore(moment())}>
                             Mark as done
                         </Button>
                     </DialogActions>
+
                 </Dialog>
 
                 {/* Edit modal */}
