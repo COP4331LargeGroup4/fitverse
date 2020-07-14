@@ -204,6 +204,9 @@ router.post('/readAll', async (req, res) => {
 	}
 });
 
+// @route POST api/workout/readAllDateRange
+// @desc Get all workouts in a given date range
+// @access  Public
 router.post('/readAllDateRange', async (req, res) => {
 	const { token, startDate, endDate } = req.body;
 
@@ -504,6 +507,5 @@ router.post('/getDoneExercises', async (req, res) => {
 		});
 	}
 });
-
 
 module.exports = router;

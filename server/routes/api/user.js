@@ -61,11 +61,6 @@ function verifyEmail(name, token) {
 	)
 }
 
-
-
-
-
-
 // @route POST api/user/login
 // @desc login user
 // @access  Public
@@ -215,7 +210,7 @@ router.post('/resendVerification', async (req, res) => {
 		console.log(e.message);
 		res.status(400).json({ err: e.message });
 	}
-})
+});
 
 router.post('/verify', async (req, res) => {
 	try {
