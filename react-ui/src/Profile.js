@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useStyles } from './Navigation'
 import FaceIcon from '@material-ui/icons/Face';
 import {
@@ -12,9 +12,18 @@ import {
 import { Formik, Field } from 'formik';
 import { TextField } from 'formik-material-ui';
 import * as Yup from 'yup';
+import axios from 'axios';
+import jwtdecode from 'jwt-decode';
+
+function getAnchor() {
+	var url = window.location
+	url = url.toString().split('#');
+	return (url.length > 1) ? url[1] : null;
+}
 
 function Profile() {
     const classes = useStyles();
+    const [success, setSuccess] = useState(getAnchor());
 	return (
 		<div style={{ height: '100vh', paddingTop: 48, alignItems: 'center', width:"100%" }}>
 			<Container component="main" maxWidth="xs" justify="center" style={{ backgroundColor: '#D9DBF1', padding: 20, borderRadius: 24, marginTop: 48, border: '3px solid #ACB0BD' }}>
@@ -25,36 +34,47 @@ function Profile() {
 						<br></br>My Profile
 					</Typography>
 
-                    {/* These values need to be initialized */}
+                    {/* HELP */}
 					<Formik
 						initialValues={{
-							firstname: '',
-							lastname: '',
-							email: '',
-							password: '',
-							agree: false
+							firstname: 'user.firstName',
+							lastname: 'user.lastName',
+							email: 'user.email',
                         }}
-                        /* CHANGE THIS!!! for the profile page */
 						validationSchema={Yup.object({
 							firstname: Yup.string("Enter your firstname")
 								.required("First Name is Required"),
 							lastname: Yup.string("Enter your lastname")
 								.required("Last Name is Required"),
-							email: Yup.string("Enter your email") // should email be allowed to be modified?
-								.email("Enter valid email")
-								.required("Email is required"),
-							password: Yup.string("Enter your password") // pswd in profile or no?
-								.min(8, "Password must contain at least 8 character")
-								.required("Password is required"),
 						})}
 
 						onSubmit={(values, { setSubmitting }) => {
-							setTimeout(() => {
-								setSubmitting(false);
-								alert(JSON.stringify(values, null, 2));
-							}, 500);
-						}}
-					>
+                            axios
+                                .post("/api/user/update", {
+                                    firstName: values.firstname,
+                                    lastName: values.lastname,
+                                },
+                                    {
+                                        headers: {
+                                            'Access-Control-Allow-Origin': '*',
+                                        },
+                                        mode: 'cors',
+                                    })
+                                .then(function (response) {
+                                    setSubmitting(false);
+                                    localStorage.setItem('jwt', response.data.token);
+                                    localStorage.setItem('user', response.data.user);
+                                    window.location.href = '#success';
+                                    setSuccess('success');
+                                })
+                                .catch(function (err) {
+                                    alert(err);
+                                    console.log(err);
+                                    setSubmitting(false);
+                                    return null;
+                                });
+                        }}
+                    >
 						{({ submitForm, isSubmitting, errors, touched }) => (
 							<form className={classes.form}>
 								<Grid container spacing={2}>
@@ -95,23 +115,9 @@ function Profile() {
 											fullWidth
 											variant="outlined"
 											margin="dense"
-                                            disabled={isSubmitting}
-                                            disabled // do we want them to be able to edit this?
+                                            disabled
 										/>
 									</Grid>
-									{/*<Grid item xs={12}>
-										<Field
-											component={TextField}
-											name="password"
-											type="password"
-											label="Password"
-											required
-											fullWidth
-											variant="outlined"
-											margin="dense"
-											disabled={isSubmitting}
-										/>
-                                    </Grid>*/}
                                     <Grid item xs={12}>
 										<Field
 											component={TextField}
