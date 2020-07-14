@@ -231,6 +231,7 @@ function Calendar(props) {
                         <List>
                             Exercises
                             {currentEvent.exercises.length ? currentEvent.exercises.map((exercise, key) => (
+                                exercise &&
                             <Accordion key={key}>
                                 <AccordionSummary
                                     expandIcon={<ExpandMoreIcon />}

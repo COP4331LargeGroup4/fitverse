@@ -69,8 +69,6 @@ const useToolbarStyles = makeStyles((theme) => ({
     },
 }));
 
-
-
 function Row(props) {
     const useRowStyles = makeStyles({
         root: {
@@ -81,15 +79,62 @@ function Row(props) {
     });
 
     const { row } = props;
-    const [open, setOpen] = React.useState(false);
+    const [collapseOpen, setCollapseOpen] = useState(false);
     const classes = useRowStyles();
+    const forceUpdate = props.update;
+    const [deleteOpen, setDeleteOpen] = useState(false);
 
+    const handleDeleteOpen = () => {
+        console.log(row);
+        console.log(deleteOpen)
+        setDeleteOpen(true);
+    };
+
+    const handleDeleteClose = () => {
+        setDeleteOpen(false);
+    };
+
+    const handleDeleteExercise = (id) => {
+        workoutUtil.deleteExercise(id).then(res => console.log(res));
+        handleDeleteClose();
+        window.location.reload(false);
+    }
+
+    const DeleteAlert = (props) => {
+        const { exercise } = props;
+        return (
+            <div>
+                <Dialog
+                    open={deleteOpen}
+                    onClose={handleDeleteClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">Delete {exercise.name}?</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            It will permanentely be removed from your exercises
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleDeleteClose} color="primary">
+                            Cancel
+                        </Button>
+                        <Button onClick={function(){handleDeleteExercise(exercise.id)}} style={{ color: 'red' }} autoFocus>
+                            Delete
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+        );
+    }
+    
     return (
         <React.Fragment>
             <TableRow className={classes.root}>
                 <TableCell>
-                    <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-                        {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                    <IconButton aria-label="expand row" size="small" onClick={() => setCollapseOpen(!collapseOpen)}>
+                        {collapseOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                     </IconButton>
                 </TableCell>
                 <TableCell component="th" scope="row">
@@ -98,7 +143,7 @@ function Row(props) {
                 <TableCell align="right">{row.date}</TableCell>
                 <TableCell align='right'>
                     <Tooltip title="Delete">
-                        <IconButton aria-label="delete" size='small' style={{ marginRight: 10 }}>
+                        <IconButton aria-label="delete" size='small' style={{ marginRight: 10 }} onClick={handleDeleteOpen}>
                             <DeleteIcon />
                         </IconButton>
                     </Tooltip>
@@ -107,11 +152,12 @@ function Row(props) {
                             <EditIcon />
                         </IconButton>
                     </Tooltip>
+                    <DeleteAlert exercise={row} />
                 </TableCell>
             </TableRow>
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                    <Collapse in={open} timeout="auto" unmountOnExit>
+                    <Collapse in={collapseOpen} timeout="auto" unmountOnExit>
                         hello
                     </Collapse>
                 </TableCell>
@@ -129,6 +175,9 @@ function Exercises() {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [exercises, setExercises] = useState();
     const [exerciseAddOpen, setExerciseAddOpen] = useState(false);
+
+    const forceUpdate = useForceUpdate();
+
     const handleExerciseOpen = () => {
         setExerciseAddOpen(true);
     };
@@ -142,6 +191,7 @@ function Exercises() {
             .then(response => {
                 setExercises(response.exercises.map(exercise => {
                     return {
+                        id: exercise._id,
                         name: exercise.name,
                         date: exercise.date,
                         notes: exercise.notes
@@ -325,6 +375,8 @@ function Exercises() {
         );
     }
 
+
+
     // const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
     return (
@@ -393,7 +445,7 @@ function Exercises() {
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((row, index) => {
                                         return (
-                                            <Row key={index} row={row} />
+                                            <Row key={index} row={row} update={forceUpdate} />
                                         );
                                     })}
 

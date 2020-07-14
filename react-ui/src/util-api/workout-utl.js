@@ -54,4 +54,63 @@ export default class WorkoutUtil {
 
         return response.data;
     }
+
+    createExercise = async (object) => {
+        var response = await axios.post("/api/exercise/create", {
+            token: localStorage.getItem('jwt'),
+            name: object.name,
+            sets: object.sets,
+            reps: object.reps,
+            weight: object.weight,
+            time: object.time,
+            distance: object.distance,
+            isCardio: object.isCardio,
+            notes: object.notes
+        }, {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            },
+            mode: 'cors'
+        })
+
+        return response.data;
+    }
+
+    updateExercise = async (id, object) => {
+        var response = await axios.post("/api/exercise/update", {
+            token: localStorage.getItem('jwt'),
+            id: id,
+            name: object.name,
+            sets: object.sets,
+            reps: object.reps,
+            weight: object.weight,
+            time: object.time,
+            distance: object.distance,
+            isCardio: object.isCardio,
+            notes: object.notes
+        }, {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            },
+            mode: 'cors'
+        })
+
+        return response.data;
+    }
+
+    deleteExercise = async (id) => {
+        var response = await axios.post("/api/exercise/delete", {
+            token: localStorage.getItem('jwt'),
+            id: id
+        }, {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            },
+            mode: 'cors'
+        })
+
+        return response.data;
+    }
+
+
 }
