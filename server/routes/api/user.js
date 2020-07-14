@@ -25,7 +25,7 @@ var smtpTransport = nodemailer.createTransport({
 
 function forgotPasswordText(name, token) {
 	const url = 'https://fitverse.herokuapp.com/resetpassword?token=' + token;
-	return (`Dear `+ name + `,
+	return (`Dear ` + name + `,
 			You requested for a password reset, kindly navigate to ` + url + ` to reset your password.
 			Cheers!`
 	)
@@ -44,7 +44,7 @@ function forgotPasswordEmail(name, token) {
 
 function verifyText(name, token) {
 	const url = 'https://fitverse.herokuapp.com/verify?token=' + token;
-	return (`Dear `+ name + `,
+	return (`Dear ` + name + `,
 			Please verify your email, kindly navigate to ` + url + ` to verify your account.
 			Cheers!`
 	)
@@ -135,7 +135,7 @@ router.post('/signup', async (req, res) => {
 						text: verifyText(newUser.firstName + ' ' + newUser.lastName, newUser.emailVerificationToken),
 						html: verifyEmail(newUser.firstName + ' ' + newUser.lastName, newUser.emailVerificationToken)
 					};
-				
+
 					await smtpTransport.sendMail(emaildata);
 
 					const savedUser = await newUser.save();
@@ -166,15 +166,49 @@ router.post('/signup', async (req, res) => {
 	});
 });
 
+// @route POST api/user/update
+// @desc Update single user by ID
+// @access  Public
+router.post('/update', async (req, res) => {
+	const { token } = req.body;
+	const { firstName, lastName } = req.body;
+
+	httpErr = 500;
+	if (!token) {
+		res.status(403).json();
+	} else {
+		jwt.verify(token, jwtConfig.secretKey, async (err, authData) => {
+			if (err) {
+				if (err.name == "TokenExpiredError") {
+					res.status(401).json();
+				} else {
+					res.status(403).json();
+				}
+			} else {
+				try {
+					User.findByIdAndUpdate(authData._id,
+						{
+							firstName, lastName
+						},
+						function (err) {
+							res.status(200).json();
+						})
+						.setOptions({ omitUndefined: true });;
+				} catch (e) {
+					res.status(httpErr).json({ err: e.message });
+				}
+			}
+		});
+	}
+});
+
 router.post('/resendVerification', async (req, res) => {
 	try {
 		var user;
-		if (req.body.token != null)
-		{
+		if (req.body.token != null) {
 			user = await User.find({ emailVerificationToken: req.body.token });
 		}
-		else if (req.body.email != null)
-		{
+		else if (req.body.email != null) {
 			user = await User.find({ email: req.body.email });
 		}
 
@@ -182,13 +216,12 @@ router.post('/resendVerification', async (req, res) => {
 
 		user = user[0];
 
-		if (user.emailVerified == true)
-		{
+		if (user.emailVerified == true) {
 			throw Error('Email already verified');
 		}
 
 		user = await User.findByIdAndUpdate(
-			{_id: user._id}, 
+			{ _id: user._id },
 			{
 				emailVerificationToken: crypto.randomBytes(10).toString('hex'),
 				emailVerificationTokenExp: Math.round((new Date()).getTime() / 1000) + 43200
@@ -201,10 +234,10 @@ router.post('/resendVerification', async (req, res) => {
 			text: verifyText(user.firstName + ' ' + user.lastName, user.emailVerificationToken),
 			html: verifyEmail(user.firstName + ' ' + user.lastName, user.emailVerificationToken)
 		};
-	
+
 		await smtpTransport.sendMail(emaildata);
-	
-		res.status(200).json({msg:"Success, Check email for next steps"});
+
+		res.status(200).json({ msg: "Success, Check email for next steps" });
 	}
 	catch (e) {
 		console.log(e.message);
@@ -220,27 +253,25 @@ router.post('/verify', async (req, res) => {
 
 		user = user[0];
 
-		if (user.emailVerificationTokenExp < Math.round((new Date()).getTime() / 1000))
-		{
+		if (user.emailVerificationTokenExp < Math.round((new Date()).getTime() / 1000)) {
 			throw Error('Token Expired');
-		} 
+		}
 
-		if (user.emailVerified == true)
-		{
+		if (user.emailVerified == true) {
 			throw Error('Email already verified');
 		}
-		
+
 		user = await User.findByIdAndUpdate(
-			{_id: user._id}, 
+			{ _id: user._id },
 			{
 				emailVerified: true,
-				emailVerificationToken: null, 
+				emailVerificationToken: null,
 				emailVerificationTokenExp: null,
 			});
 
 
 
-		res.status(200).json({msg:"success"});
+		res.status(200).json({ msg: "success" });
 	}
 	catch (e) {
 		console.log(e.message);
@@ -300,9 +331,9 @@ router.post('/forgotPassword', async (req, res) => {
 		user = user[0];
 
 		user = await User.findByIdAndUpdate(
-			{_id: user._id}, 
+			{ _id: user._id },
 			{
-				passwordResetToken: crypto.randomBytes(10).toString('hex'), 
+				passwordResetToken: crypto.randomBytes(10).toString('hex'),
 				passwordResetTokenExp: Math.round((new Date()).getTime() / 1000) + 43200
 			});
 
@@ -319,7 +350,7 @@ router.post('/forgotPassword', async (req, res) => {
 
 		await smtpTransport.sendMail(emaildata);
 
-		res.status(200).json({msg:"Success, Check email for next steps"});
+		res.status(200).json({ msg: "Success, Check email for next steps" });
 	}
 	catch (e) {
 		console.log(e.message);
@@ -347,14 +378,14 @@ router.post('/resetPassword', async (req, res) => {
 		if (!hash) throw Error('Bcrypt hash error');
 
 		user = await User.findByIdAndUpdate(
-			{_id: user._id}, 
+			{ _id: user._id },
 			{
 				password: hash,
-				passwordResetToken: null, 
+				passwordResetToken: null,
 				passwordResetTokenExp: null,
 			});
 
-		res.status(200).json({msg:"Password has been updated successfully"});
+		res.status(200).json({ msg: "Password has been updated successfully" });
 	}
 	catch (e) {
 		console.log(e.message);
