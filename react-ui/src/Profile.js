@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useStyles } from './Navigation'
 import FaceIcon from '@material-ui/icons/Face';
+import { mdiAccountCowboyHat } from '@mdi/js';
+import Icon from '@mdi/react'
 import {
     Button,
     CircularProgress,
@@ -20,22 +22,25 @@ function getAnchor() {
 	return (url.length > 1) ? url[1] : null;
 }
 
+//var user = {"firstName" :"first name", "lastName": "last name"}
+
 function Profile() {
     const classes = useStyles();
     const [success, setSuccess] = useState(getAnchor());
-
+    
     function Form(){
         return (
             <>
             <Typography component="h1" variant="h5" style={{ textAlign:'center', marginTop: 5 }}>
-                <FaceIcon style={{ fontSize: "64px" }} />
+                <Icon path={mdiAccountCowboyHat} size= {"256px" } />
+                
 				<br></br>My Profile
 			</Typography>
 			<Formik
 				initialValues={{
-					    firstname: 'user.firstNameHELP',
-					    lastname: 'user.lastName',
-                        email: 'INSERT EMAIL HERE',
+                        firstname: JSON.parse(localStorage.getItem('user')).firstName,
+					    lastname: JSON.parse(localStorage.getItem('user')).lastName,
+                        //email: user.email,
                 }}
 				validationSchema={Yup.object({
 					firstname: Yup.string("Enter your firstname")
@@ -59,7 +64,7 @@ function Profile() {
                             .then(function (response) {
                                 setSubmitting(false);
                                 localStorage.setItem('jwt', response.data.token);
-                                //localStorage.setItem('user', response.data.user); //???
+                                localStorage.setItem('user', response.data.user); //???
                                 window.location.href = '#success';
                                 setSuccess('success');
                             })
@@ -114,7 +119,7 @@ function Profile() {
                                         disabled
 									/>
 								</Grid>
-                                <Grid item xs={12}>
+                                {/*<Grid item xs={12}>
 									<Field
 										component={TextField}
 										name="notes"
@@ -126,8 +131,8 @@ function Profile() {
                                         disabled={isSubmitting}
                                         multiline
                                         rows={4} 
-									/>
-								</Grid> 
+                                </Grid> 
+                                />*/}
                                 <Grid item xs={12}>
                                     <Button
                                         fullWidth
