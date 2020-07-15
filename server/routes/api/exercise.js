@@ -11,7 +11,9 @@ const jwtConfig = require('./Config/jwtConfig');
 // @desc Create exercise
 // @access  Public
 router.post('/create', async (req, res) => {
-	const { token, name, sets, reps, weight, time, distance, isCardio, notes } = req.body;
+	const { token, name, sets, reps, weight, time, distance, notes } = req.body;
+
+	var isCardio = false;
 
 	httpErr = 500;
 	if (!token) {
