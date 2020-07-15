@@ -22,8 +22,6 @@ function getAnchor() {
 	return (url.length > 1) ? url[1] : null;
 }
 
-//var user = {"firstName" :"first name", "lastName": "last name"}
-
 function Profile() {
     const classes = useStyles();
     const [success, setSuccess] = useState(getAnchor());
@@ -38,9 +36,9 @@ function Profile() {
 			</Typography>
 			<Formik
 				initialValues={{
-                        firstname: JSON.parse(localStorage.getItem('user')).firstName,
-					    lastname: JSON.parse(localStorage.getItem('user')).lastName,
-                        //email: user.email,
+                    firstname: JSON.parse(localStorage.getItem('user')).firstName,
+                    lastname: JSON.parse(localStorage.getItem('user')).lastName,
+                    email: JSON.parse(localStorage.getItem('user')).email,
                 }}
 				validationSchema={Yup.object({
 					firstname: Yup.string("Enter your firstname")
