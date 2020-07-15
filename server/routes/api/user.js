@@ -80,8 +80,9 @@ router.post('/login', async (req, res) => {
 							token,
 
 							user: {
+								email: user.email,
 								firstName: user.firstName,
-								lastName: user.lastName,
+								lastName: user.lastName
 							}
 						});
 					});
