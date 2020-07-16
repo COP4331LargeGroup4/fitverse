@@ -55,14 +55,14 @@ export default function DailyChecklist() {
               />
             </ListItemIcon>
             <ListItemText id={labelId} primary={`Exercise ${value + 1}`} />
-            <ListItemSecondaryAction>
-              <IconButton edge="end" aria-label="comments" > {/*onClick={handleEditOpen}*/}
+            {/*<ListItemSecondaryAction>
+              <IconButton edge="end" aria-label="comments" >
                 <EditIcon />
               </IconButton>
               <IconButton edge="end" aria-label="comments">
                 <DeleteIcon/>
               </IconButton>
-            </ListItemSecondaryAction>
+            </ListItemSecondaryAction>*/}
           </ListItem>
         );
       })}
