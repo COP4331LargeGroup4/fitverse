@@ -29,9 +29,8 @@ function Profile() {
     function Form(){
         return (
             <>
-            <Typography component="h1" variant="h5" style={{ textAlign:'center', marginTop: 5 }}>
-                <Icon path={mdiAccountCowboyHat} size= {"256px" } />
-                
+            <Typography component="h1" variant="h5" style={{ textAlign:'center', marginTop: 5}}>
+                <Icon path={mdiAccountCowboyHat} size= {"240px" } />
 				<br></br>My Profile
 			</Typography>
 			<Formik
@@ -50,30 +49,34 @@ function Profile() {
 				onSubmit={(values, { setSubmitting }) => {
                     axios
                         .post("/api/user/update", {
+                            token: localStorage.getItem('jwt'),
                             firstName: values.firstname,
                             lastName: values.lastname,
-                        },
-                            {
-                                headers: {
-                                    'Access-Control-Allow-Origin': '*',
-                                },
-                                mode: 'cors',
-                            })
-                            .then(function (response) {
-                                setSubmitting(false);
-                                localStorage.setItem('jwt', response.data.token);
-                                localStorage.setItem('user', response.data.user); //???
-                                window.location.href = '#success';
-                                setSuccess('success');
-                            })
-                            .catch(function (err) {
-                                alert(err);
-                                console.log(err);
-                                setSubmitting(false);
-                                return null;
-                            });
-                        }}
-                    >
+                        }, {
+                            headers: { 'Access-Control-Allow-Origin': '*' },
+                            mode: 'cors',
+                        })
+                        .then(function (response) {
+                            setSubmitting(false);
+
+                            if (response.status === 200) {
+                                localStorage.setItem('user', JSON.stringify(
+                                    {
+                                        firstName: values.firstname,
+                                        lastName: values.lastname,
+                                        email: JSON.parse(localStorage.getItem('user')).email,
+                                    }
+                                ));
+                                //alert(response.data);
+                                //window.location.reload(false);
+                            }
+                        })
+                        .catch(function (err) {
+                            console.log(err);
+                            setSubmitting(false);
+                        });
+                }}
+            >
 					{({ submitForm, isSubmitting, errors, touched }) => (
 						<form className={classes.form}>
 							<Grid container spacing={2}>
