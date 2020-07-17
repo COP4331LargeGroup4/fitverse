@@ -4,13 +4,9 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ListItemSecondaryAction,
   ListItemText,
   Checkbox,
-  IconButton,
 } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,9 +18,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DailyChecklist() {
   const classes = useStyles();
-  const [checked, setChecked] = React.useState([-1]); // starts it off with a check at index.
+  const [checked, setChecked] = React.useState([]); // starts it off with a check at index.
+  const array1 = ["ex1", "ex2", "ex3", "ex4"]; // will be the daily exercises
 
-  const handleToggle = (value) => () => {
+  const handleCheck = (value) => () => {
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
 
@@ -35,15 +32,16 @@ export default function DailyChecklist() {
     }
 
     setChecked(newChecked);
+    //alert(new Date()); alert for current date and time
   };
 
   return (
     <List className={classes.root}>
-      {[0, 1, 2, 3].map((value) => {
+      {array1.map((value) => {
         const labelId = `checkbox-list-label-${value}`;
 
         return (
-          <ListItem key={value} role={undefined} dense button onClick={handleToggle(value)}>
+          <ListItem key={value} role={undefined} dense button onClick={handleCheck(value)}>
             <ListItemIcon>
               <Checkbox
                 edge="start"
@@ -54,15 +52,7 @@ export default function DailyChecklist() {
                 color = "primary"
               />
             </ListItemIcon>
-            <ListItemText id={labelId} primary={`Exercise ${value + 1}`} />
-            {/*<ListItemSecondaryAction>
-              <IconButton edge="end" aria-label="comments" >
-                <EditIcon />
-              </IconButton>
-              <IconButton edge="end" aria-label="comments">
-                <DeleteIcon/>
-              </IconButton>
-            </ListItemSecondaryAction>*/}
+            <ListItemText id={labelId} primary={` ${value}`} />
           </ListItem>
         );
       })}
