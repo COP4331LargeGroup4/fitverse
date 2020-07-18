@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 // User model
 const Exercise = require('../../models/exercise');
 const jwtConfig = require('./Config/jwtConfig');
+const exercise = require('../../models/exercise');
 
 // @route POST api/exercise/create
 // @desc Create exercise
@@ -65,7 +66,7 @@ router.post('/create', async (req, res) => {
 						throw Error('Something went wrong saving the user');
 					}
 
-					res.status(201).json()
+					res.status(200).json({exercise : savedExercise})
 
 				} catch (e) {
 					res.status(httpErr).json({ err: e.message });
