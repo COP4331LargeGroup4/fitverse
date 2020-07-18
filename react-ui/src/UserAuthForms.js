@@ -81,32 +81,32 @@ export function VerifyEmail() {
 		window.location.href = '/';
 	}
 
-	if (!success){
+	if (!success) {
 		axios
-		.post("/api/user/verify", {
-			token: token
-		},
-			{
-				headers: {
-					'Access-Control-Allow-Origin': '*',
-				},
-				mode: 'cors',
+			.post("/api/user/verify", {
+				token: token
+			},
+				{
+					headers: {
+						'Access-Control-Allow-Origin': '*',
+					},
+					mode: 'cors',
+				})
+			.then(function (response) {
+				window.location.href = '#success';
+				setSuccess(true);
+				setTimeout(function () { window.location = '/dashboard'; }, 3000)
+				// TODO: LOOK INTO OPTIONS FOR THIS
 			})
-		.then(function (response) {
-			window.location.href = '#success';
-			setSuccess(true);
-			setTimeout(function(){window.location='/dashboard';}, 3000)
-			// TODO: LOOK INTO OPTIONS FOR THIS
-		})
-		.catch(function (err) {
-			alert(err);
-			console.log(err);
-			//setSubmitting(false);
-			return null;
-		});
-	}else {
-		
-		setTimeout(function(){window.location='/dashboard';}, 3000)
+			.catch(function (err) {
+				alert(err);
+				console.log(err);
+				//setSubmitting(false);
+				return null;
+			});
+	} else {
+
+		setTimeout(function () { window.location = '/dashboard'; }, 3000)
 	}
 
 	return (
@@ -118,20 +118,20 @@ export function VerifyEmail() {
 						<Img src={Logo} style={{ maxWidth: "100%" }} />
 					</NavLink>
 
-					{success ? 
+					{success ?
 						<><Typography component="h1" variant="h5" style={{ marginTop: 20 }}>
 							Your email is now verified
 						</Typography>
-						<Typography component="subtitle1">
-							Redirecting you to the dashboard
+							<Typography component="subtitle1">
+								Redirecting you to the dashboard
 						</Typography>
 						</>
-					:
-					<><Typography component="h1" variant="h5" style={{ marginTop: 20 }}>
-						Verifing Account
+						:
+						<><Typography component="h1" variant="h5" style={{ marginTop: 20 }}>
+							Verifing Account
 					</Typography>
-					<Typography component="subtitle1">
-						Please wait
+							<Typography component="subtitle1">
+								Please wait
 					</Typography></>
 					}
 				</div>
@@ -390,7 +390,7 @@ export function SignUp() {
 							.then(function (response) {
 								setSubmitting(false);
 								localStorage.setItem('jwt', response.data.token);
-								localStorage.setItem('user', response.data.user);
+								localStorage.setItem('user', JSON.stringify(response.data.user));
 								window.location.href = '#success';
 								setSuccess('success');
 							})
@@ -501,10 +501,10 @@ export function SignUp() {
 			<>
 				<Typography component="h1" variant="h5" style={{ marginTop: 20 }}>
 					Signup successful
-			</Typography>
+				</Typography>
 				<Typography component="subtitle1">
 					Check your email to verify your account!
-			</Typography>
+				</Typography>
 			</>
 		)
 	}
@@ -610,7 +610,7 @@ export function SignIn() {
 
 									if (response.status === 200) {
 										localStorage.setItem('jwt', response.data.token);
-										localStorage.setItem('user', response.data.user);
+										localStorage.setItem('user', JSON.stringify(response.data.user));
 
 										window.location.href = '/dashboard';
 									}
