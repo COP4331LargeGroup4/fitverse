@@ -109,8 +109,8 @@ class DesktopContainer extends Component {
                         >
                             <Container>
                                 <Menu.Item position='right'>
-                                    <Button inverted={!fixed} as={NavLink} exact to="/signin">Log in</Button>
-                                    <Button inverted={!fixed} as={NavLink} exact to="/signup" primary={fixed} style={{ marginLeft: '0.5em' }}>
+                                    <Button inverted={!fixed} as={NavLink} exact to="/signin">Log In</Button>
+                                    <Button inverted={!fixed} as={NavLink} exact to="/signup" primary={fixed} style={{ marginLeft: '0.5em'}}>
                                         Sign Up
                                     </Button>
                                 </Menu.Item>
@@ -147,24 +147,27 @@ class MobileContainer extends Component {
                 getWidth={getWidth}
                 maxWidth={Responsive.onlyMobile.maxWidth}
             >
+                {/* When the page shrinks */}
                 <Sidebar
+                    border="none"
                     as={Menu}
                     animation='push'
                     inverted
                     onHide={this.handleSidebarHide}
                     vertical
                     visible={sidebarOpened}
+                    style = {{backgroundColor: "#416165"}}
                 >
-                    <Menu.Item as='a'>Log in</Menu.Item>
-                    <Menu.Item as='a'>Sign Up</Menu.Item>
+                    <Menu.Item as={NavLink} exact to="/signin">Log In</Menu.Item>
+                    <Menu.Item as={NavLink} exact to="/signup">Sign Up</Menu.Item>
                 </Sidebar>
 
-                <Sidebar.Pusher dimmed={sidebarOpened}>
+                <Sidebar.Pusher dimmed={sidebarOpened}> {/* when page is shrunk */}
                     <Segment
                         inverted
                         textAlign='center'
-                        style={{ minHeight: 350, padding: '1em 0em' }}
                         vertical
+                        style={{ minHeight: 500, padding: '1em 0em', backgroundColor: '#D9DBF1'}} 
                     >
                         <Container>
                             <Menu inverted pointing secondary size='large'>
@@ -172,10 +175,10 @@ class MobileContainer extends Component {
                                     <Icon name='sidebar' />
                                 </Menu.Item>
                                 <Menu.Item position='right'>
-                                    <Button as='a' inverted>
-                                        Log in
+                                    <Button as={NavLink} exact to="/signin" inverted>
+                                        Log In
                                     </Button>
-                                    <Button as='a' inverted style={{ marginLeft: '0.5em' }}>
+                                    <Button as={NavLink} exact to="/signup" inverted style={{ marginLeft: '0.5em'}}>
                                         Sign Up
                                     </Button>
                                 </Menu.Item>
@@ -211,10 +214,10 @@ export const HomepageLayout = () => (
         <Segment style={{ padding: '8em 0em' }} vertical>
             <Grid container stackable verticalAlign='middle'>
                 <Grid.Row>
-                        <Header as='h3' style={{ fontSize: '2em' }}>
+                        <Header as='h3' style={{ fontSize: '2em', paddingLeft: '0.5em'}}>
                             What Fitverse Has To Offer
                         </Header>
-                        <p style={{ fontSize: '1.33em' }}>
+                        <p style={{ fontSize: '1.33em', paddingLeft: '1em' }}>
                             We provide an easy way for you to plan and log your workouts.
                             All of our exercises and workouts are fully customizable! 
                             You can even include your specific goals for each workout.
