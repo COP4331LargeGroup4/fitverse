@@ -53,7 +53,7 @@ export function Dashboard() {
             <DailyChecklist />
             </Paper>
           </Grid>
-          <Grid item xs={4} md={4} lg={4}>
+          <Grid item xs={12} md={5} lg={6}>
             <Paper style={{ boxShadow: '3px 3px 10px 6px #a6a5a7', backgroundColor: '#D0CDD7', borderRadius: 8, padding: '5px 5px 20px 10px' }}>
               <Typography component="h3" variant="h6" color="inherit" noWrap className={classes.title}>
                   Quick Add

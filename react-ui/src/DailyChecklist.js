@@ -7,6 +7,10 @@ import {
   ListItemText,
   Checkbox,
 } from '@material-ui/core';
+import _ from 'underscore';
+import WorkoutUtil from './util-api/workout-utl';
+
+const workoutUtil = new WorkoutUtil();
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,7 +36,10 @@ export default function DailyChecklist() {
     }
 
     setChecked(newChecked);
-    //alert(new Date()); alert for current date and time
+    var currentDate = new Date();
+    alert(JSON.stringify({currentDate})); //alert for current date and time
+    var dayOfWeek = currentDate.getDay();
+    alert(dayOfWeek);
   };
 
   return (
