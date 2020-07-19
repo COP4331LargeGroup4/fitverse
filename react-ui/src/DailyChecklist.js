@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  FormControlLabel,
+  Typography,
   makeStyles,
   List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Checkbox,
 } from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import _ from 'underscore';
-import WorkoutUtil from './util-api/workout-utl';
+import WorkoutUtil from './util-api/workout-utl'
 
 const workoutUtil = new WorkoutUtil();
 
@@ -23,46 +26,77 @@ const useStyles = makeStyles((theme) => ({
 export default function DailyChecklist() {
   const classes = useStyles();
   const [checked, setChecked] = React.useState([]); // starts it off with a check at index.
-  const array1 = ["ex1", "ex2", "ex3", "ex4"]; // will be the daily exercises
+  const [workouts, setWorkouts] = useState();
+  var currentDate = new Date();
 
-  const handleCheck = (value) => () => {
+  const initializeList = async () => {
+      var workouts = await workoutUtil.getAllWorkoutsInRange(
+      {
+          startDate: currentDate,
+          endDate: currentDate
+      })
+      var myWorkoutsList = workouts.workouts.map(workout => { // workout is a single workout/index of array
+          return workout
+      })
+      setWorkouts(myWorkoutsList)
+  }
+
+  useEffect(() => {
+    initializeList();
+  }, []);
+
+  const handleCheck = (value) => () => {      //HERE
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
 
     if (currentIndex === -1) {
       newChecked.push(value);
+      alert("CHECKED");
     } else {
       newChecked.splice(currentIndex, 1);
     }
 
     setChecked(newChecked);
-    var currentDate = new Date();
-    alert(JSON.stringify({currentDate})); //alert for current date and time
-    var dayOfWeek = currentDate.getDay();
-    alert(dayOfWeek);
+    // mark as done or not done here. 
   };
 
   return (
-    <List className={classes.root}>
-      {array1.map((value) => {
-        const labelId = `checkbox-list-label-${value}`;
-
-        return (
-          <ListItem key={value} role={undefined} dense button onClick={handleCheck(value)}>
-            <ListItemIcon>
-              <Checkbox
-                edge="start"
-                checked={checked.indexOf(value) !== -1}
-                tabIndex={-1}
-                disableRipple
-                inputProps={{ 'aria-labelledby': labelId }}
-                color = "primary"
-              />
-            </ListItemIcon>
-            <ListItemText id={labelId} primary={` ${value}`} />
-          </ListItem>
-        );
-      })}
-    </List>
+    <div>
+        {
+          workouts ? workouts.map(workout => (            // only if exists 
+            <List>
+              <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+                  {workout.name + "'s Exercises"}
+              </Typography>
+              {workout.exercises.map((exercise, key) => (
+                <Accordion key={key}>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-label="Expand"
+                    aria-controls="additional-actions1-content"
+                    id="additional-actions1-header"
+                >
+                    <FormControlLabel
+                        aria-label="Acknowledge"
+                        onClick={(event) => event.stopPropagation()}
+                        onFocus={(event) => event.stopPropagation()}
+                        control={<Checkbox color='primary' />} //<----
+                        label={exercise.name}
+                    />
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography color="textSecondary">
+                        {exercise.notes}
+                    </Typography>
+                </AccordionDetails>
+              </Accordion>
+              ))}
+            </List>
+          ))
+          : <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+              {"No Exercises for Today"}
+            </Typography>
+        }
+    </div>
   );
 }
