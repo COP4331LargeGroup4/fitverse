@@ -454,7 +454,7 @@ router.post('/markExercisesDone', async (req, res) => {
 					} else {
 						CompletedExercises.findOneAndUpdate({ workout: workout, date: date },
 							{
-								exercises: _.difference(_.union(addDoneExercises, completedExercises.doneDates), removeDoneExercises),
+								exercises: _.difference(_.union(addDoneExercises, completedExercises.exercises), removeDoneExercises),
 							},
 							function (err) {
 								res.status(200).json();
