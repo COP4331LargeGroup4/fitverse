@@ -74,18 +74,6 @@ function ControllableDropdown(props) {
     const loading = open && options.length === 0;
     const [selectedExercise, setSelectedExercise] = useState(props.exercise);
 
-    // const getAllExercises = async () => {
-
-    //     var exercises = await workoutUtil.getAllExercises();
-
-    //     // var available = _.filter(exercises.exercises, function (obj) { return !_.findWhere(props.workout.exercises, { _id: obj._id }); });
-
-    //     setAvailableExercises(exercises.exercises);
-    //     console.log(value);
-
-    //     return exercises.exercises;
-    // }
-
     useEffect(() => {
         let active = true;
 
@@ -364,6 +352,7 @@ export const AddWorkoutDialog = (props) => {
 
 
 function Calendar(props) {
+    console.log(sessionStorage.getItem('calendar'))
     const classes = useStyles();
     const [readModal, toggleReadModal] = useState(false);
     const [editModal, toggleEditModal] = useState(false);
@@ -412,6 +401,10 @@ function Calendar(props) {
 
 
     useEffect(() => {
+        if(sessionStorage.getItem('addWorkout')) {
+            handleAddOpen();
+            sessionStorage.removeItem('addWorkout');
+        }
         getAllEvents();
     }, []);
 
