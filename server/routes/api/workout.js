@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const moment = require('moment');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const _ = require('underscore');
@@ -225,7 +226,7 @@ router.post('/readAllDateRange', async (req, res) => {
 
 				try {
 					// Verify request
-					if (!startDate) {
+					if (!startDate || !endDate) {
 						httpErr = 400
 						throw Error('Missing required fields');
 					}
@@ -233,16 +234,33 @@ router.post('/readAllDateRange', async (req, res) => {
 					const workouts =
 						await Workout.find({
 							userId: authData._id,
-							startDate: { $lt: new Date(endDate) },
+							startDate: { $lte: new Date(endDate) },
 							$or: [
 								{ endDate: { $eq: undefined } },
-								{ endDate: { $gt: new Date(startDate) } }
+								{ endDate: { $gte: new Date(startDate) } }
 							]
 						});
+
+
+					var weekly = [];
+					var startDateWeek = moment(startDate).day();
+					var dateRange = moment(endDate).diff(moment(startDate), 'days');
+
+					// find which days of the week are in the date range
+					for (var i = 0; i <= 6 && i <= dateRange; i++) {
+						if (startDateWeek + i > 6)
+							weekly.push(startDateWeek + i - 7);
+						else
+							weekly.push(startDateWeek + i);
+					}
 
 					// Cursed Code don't touch don't replicate
 					var retWorkouts =
 						workouts.map((workout) => {
+							// if workout doesn't contain the days of the week then we wont return the workout
+							if (_.intersection(workout.weekly, weekly).length == 0)
+								return;
+
 							var retWorkout = {
 								_id: workout._id,
 								name: workout.name,
@@ -272,7 +290,7 @@ router.post('/readAllDateRange', async (req, res) => {
 							return promises
 						});
 					Promise.all(retWorkouts).then(result => {
-						res.status(200).json({ workouts: result });
+						res.status(200).json({ workouts: _.without(result, null, undefined) });
 					});
 				} catch (e) {
 					res.status(httpErr).json({ err: e.message });
@@ -287,7 +305,7 @@ router.post('/readAllDateRange', async (req, res) => {
 // @access  Public
 router.post('/update', async (req, res) => {
 	const { token, id } = req.body;
-	const { name, overwriteExercises, removeExercises, addExercises, weekly, startDate, endDate, notes,
+	var { name, overwriteExercises, removeExercises, addExercises, weekly, startDate, endDate, notes,
 		addDeviatedWorkouts, removeDeviatedWorkouts, deletedDates, addDoneDates, removeDoneDates } = req.body;
 
 	httpErr = 500;
@@ -329,11 +347,22 @@ router.post('/update', async (req, res) => {
 					else
 						exercises = _.difference(_.union(addExercises, workout.exercises), removeExercises);
 
+
+					// change remove dates to isoString format
+					for (var i = 0; i < removeDoneDates.length; i++) {
+						removeDoneDates[i] = new Date(removeDoneDates[i]).toISOString();
+					}
+
+					var doneDates = []
+					for (var i = 0; i < workout.doneDates.length; i++) {
+						doneDates.push(new Date(workout.doneDates[i]).toISOString());
+					}
+
 					Workout.findByIdAndUpdate(id,
 						{
 							name,
 							exercises,
-							doneDates: _.difference(_.union(addDoneDates, workout.doneDates), removeDoneDates),
+							doneDates: _.without(_.union(addDoneDates, doneDates), removeDoneDates[0]),
 							deviatedWorkouts: _.difference(_.union(addDeviatedWorkouts, workout.doneDates), removeDeviatedWorkouts),
 							deletedDates: _.union(deletedDates, workout.deletedDates),
 							weekly, startDate, endDate, notes
@@ -454,7 +483,7 @@ router.post('/markExercisesDone', async (req, res) => {
 					} else {
 						CompletedExercises.findOneAndUpdate({ workout: workout, date: date },
 							{
-								exercises: _.difference(_.union(addDoneExercises, completedExercises.doneDates), removeDoneExercises),
+								exercises: _.difference(_.union(addDoneExercises, completedExercises.exercises), removeDoneExercises),
 							},
 							function (err) {
 								res.status(200).json();
