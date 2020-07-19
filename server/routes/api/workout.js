@@ -305,7 +305,7 @@ router.post('/readAllDateRange', async (req, res) => {
 // @access  Public
 router.post('/update', async (req, res) => {
 	const { token, id } = req.body;
-	const { name, overwriteExercises, removeExercises, addExercises, weekly, startDate, endDate, notes,
+	var { name, overwriteExercises, removeExercises, addExercises, weekly, startDate, endDate, notes,
 		addDeviatedWorkouts, removeDeviatedWorkouts, deletedDates, addDoneDates, removeDoneDates } = req.body;
 
 	httpErr = 500;
@@ -347,11 +347,22 @@ router.post('/update', async (req, res) => {
 					else
 						exercises = _.difference(_.union(addExercises, workout.exercises), removeExercises);
 
+
+					// change remove dates to isoString format
+					for (var i = 0; i < removeDoneDates.length; i++) {
+						removeDoneDates[i] = new Date(removeDoneDates[i]).toISOString();
+					}
+
+					var doneDates = []
+					for (var i = 0; i < workout.doneDates.length; i++) {
+						doneDates.push(new Date(workout.doneDates[i]).toISOString());
+					}
+
 					Workout.findByIdAndUpdate(id,
 						{
 							name,
 							exercises,
-							doneDates: _.difference(_.union(addDoneDates, workout.doneDates), removeDoneDates),
+							doneDates: _.without(_.union(addDoneDates, doneDates), removeDoneDates[0]),
 							deviatedWorkouts: _.difference(_.union(addDeviatedWorkouts, workout.doneDates), removeDeviatedWorkouts),
 							deletedDates: _.union(deletedDates, workout.deletedDates),
 							weekly, startDate, endDate, notes
