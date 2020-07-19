@@ -287,7 +287,7 @@ router.post('/readAllDateRange', async (req, res) => {
 // @access  Public
 router.post('/update', async (req, res) => {
 	const { token, id } = req.body;
-	const { name, removeExercises, addExercises, weekly, startDate, endDate, notes,
+	const { name, overwriteExercises, removeExercises, addExercises, weekly, startDate, endDate, notes,
 		addDeviatedWorkouts, removeDeviatedWorkouts, deletedDates, addDoneDates, removeDoneDates } = req.body;
 
 	httpErr = 500;
@@ -323,10 +323,16 @@ router.post('/update', async (req, res) => {
 						throw Error('Invalid credentials');
 					}
 
+					var exercises;
+					if (overwriteExercises)
+						exercises = overwriteExercises;
+					else
+						exercises = _.difference(_.union(addExercises, workout.exercises), removeExercises);
+
 					Workout.findByIdAndUpdate(id,
 						{
 							name,
-							exercises: _.difference(_.union(addExercises, workout.exercises), removeExercises),
+							exercises,
 							doneDates: _.difference(_.union(addDoneDates, workout.doneDates), removeDoneDates),
 							deviatedWorkouts: _.difference(_.union(addDeviatedWorkouts, workout.doneDates), removeDeviatedWorkouts),
 							deletedDates: _.union(deletedDates, workout.deletedDates),
@@ -448,7 +454,7 @@ router.post('/markExercisesDone', async (req, res) => {
 					} else {
 						CompletedExercises.findOneAndUpdate({ workout: workout, date: date },
 							{
-								exercises: _.difference(_.union(addDoneExercises, completedExercises.doneDates), removeDoneExercises),
+								exercises: _.difference(_.union(addDoneExercises, completedExercises.exercises), removeDoneExercises),
 							},
 							function (err) {
 								res.status(200).json();
