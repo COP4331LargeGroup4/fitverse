@@ -102,7 +102,21 @@ export const useStyles = makeStyles((theme) => ({
     },
     events: {
       cursor:'pointer',
-      backgroundColor: '#416164'
+      backgroundColor: '#416164',
+      padding: 3,
+    },
+    eventDone: {
+      cursor:'pointer',
+      backgroundColor: '#939393',
+      padding: 3,
+      textDecoration: 'line-through !important',
+      textDecorationColor: 'white !important',
+      outline: 'none !important',
+      border: 'none !important'
+    },
+    doneTitle : {
+      textDecoration: 'line-through !important',
+      textDecorationColor: 'black !important',
     },
     eventButtons: {
       float: 'right', 

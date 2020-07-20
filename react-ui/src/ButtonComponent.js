@@ -67,7 +67,9 @@ export default function ButtonComponents() {
 
   const [workoutOpen, setWorkoutOpen] = React.useState(false);
   const handleWorkoutOpen = () => {
-    setWorkoutOpen(true);
+    sessionStorage.setItem('addWorkout', 'true')
+    window.location.href = '/calendar';
+    // setWorkoutOpen(true);
   };
   const handleWorkoutClose = () => {
     setWorkoutOpen(false);
@@ -75,7 +77,9 @@ export default function ButtonComponents() {
 
   const [exerciseOpen, setExerciseOpen] = React.useState(false);
   const handleExerciseOpen = () => {
-    setExerciseOpen(true);
+    sessionStorage.setItem('addExercise', 'true')
+    window.location.href = '/exercises';
+    // setExerciseOpen(true);
   };
   const handleExerciseClose = () => {
     setExerciseOpen(false);
@@ -483,11 +487,11 @@ export default function ButtonComponents() {
       <Grid container spacing={3} justify="center">
         <Grid item >
           <Button size="large" variant="contained" color="primary"  fullWidth style={{backgroundColor: '#416164'}} onClick={handleExerciseOpen}>Add Exercise</Button>
-          <AddExerciseDialog/>
+          {/* <AddExerciseDialog/> */}
         </Grid>
         <Grid item>
           <Button size="large" variant="contained" color="primary"  fullWidth style={{backgroundColor: '#416164'}} onClick={handleWorkoutOpen}>Add Workout</Button>
-          <AddWorkoutDialog/>
+          {/* <AddWorkoutDialog/> */}
         </Grid>
       </Grid>   
     </React.Fragment>
