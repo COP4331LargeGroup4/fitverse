@@ -365,7 +365,7 @@ router.post('/update', async (req, res) => {
 						{
 							name,
 							exercises,
-							doneDates: _.without(_.union(addDoneDates, doneDates), removeDoneDates),
+							doneDates: _.difference(_.union(addDoneDates, doneDates), removeDoneDates),
 							deviatedWorkouts: _.difference(_.union(addDeviatedWorkouts, workout.deviatedWorkouts), removeDeviatedWorkouts),
 							deletedDates: _.union(deletedDates, workout.deletedDates),
 							weekly, startDate, endDate, notes
@@ -530,13 +530,58 @@ router.post('/getDoneExercises', async (req, res) => {
 					if (!completedExercises) {
 						res.status(200).json({ doneExercises: [] });
 					}
-
-					if (completedExercises.userId != authData._id) {
+					else if (completedExercises.userId != authData._id) {
 						httpErr = 403;
 						throw Error('Invalid credentials');
 					}
+					else {
+						res.status(200).json({ doneExercises: completedExercises.exercises });
+					}
 
-					res.status(200).json({ doneExercises: completedExercises.exercises });
+				} catch (e) {
+					res.status(httpErr).json({ err: e.message });
+				}
+			}
+		});
+	}
+});
+
+// @route POST api/workout/getDoneExercises
+// @desc Get a list of exercise IDs that are done for a workout on a certain date
+// @access  Public
+router.post('/getAllDoneExercisesOnDate', async (req, res) => {
+	const { token, workouts, date } = req.body;
+
+	httpErr = 500;
+	if (!token) {
+		res.status(403).json();
+	} else {
+		jwt.verify(token, jwtConfig.secretKey, async (err, authData) => {
+			if (err) {
+				if (err.name == "TokenExpiredError") {
+					res.status(401).json();
+				} else {
+					res.status(403).json();
+				}
+			} else {
+				try {
+					if (!workouts || !date) {
+						httpErr = 400
+						throw Error('Missing required felids');
+					}
+
+					var completedExercises = await CompletedExercises.findOne({ userId: authData._id, date: date });
+
+					if (!completedExercises) {
+						res.status(200).json({ doneExercises: [] });
+					}
+					else if (completedExercises.userId != authData._id) {
+						httpErr = 403;
+						throw Error('Invalid credentials');
+					}
+					else {
+						res.status(200).json({ doneExercises: completedExercises });
+					}
 
 				} catch (e) {
 					res.status(httpErr).json({ err: e.message });
