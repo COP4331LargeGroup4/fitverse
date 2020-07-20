@@ -240,6 +240,11 @@ function Exercises() {
     }
 
     useEffect(() => {
+        if (sessionStorage.getItem('addExercise')) {
+            handleExerciseOpen();
+            sessionStorage.removeItem('addExercise');
+        }
+
         getAllRows();
     }, []);
 
