@@ -164,19 +164,7 @@ function ExerciseTable(props) {
         { id: 'actions', numeric: true, disablePadding: false, sortable: false, label: '' }
     ];
 
-    const classes = useStyles();
-    // console.log(props.workout.exercises)
-    const [state, setState] = useState({
-        columns: [
-            { title: 'Exercise Name', field: 'name' },
-        ],
-        data: props.workout.exercises
-    });
     const [rows, setRows] = useState(props.workout.exercises);
-
-    // useEffect(() => {
-    //     setRows(props.workout.exercises)
-    // })
 
     const addRow = () => {
         console.log(rows)
@@ -350,9 +338,89 @@ export const AddWorkoutDialog = (props) => {
     )
 }
 
+function ExerciseCheckList(props) {
+    const { currentEvent, classes } = props;
+    const [doneExercises, setDoneExercises] = useState([]);
+
+    const getExercisesDone = async (workoutId, date) => {
+        var doneExercises = await workoutUtil.getDoneExercises(workoutId, date);
+
+        setDoneExercises(doneExercises.doneExercises);
+    }
+
+    useEffect(() => {
+        getExercisesDone(currentEvent.id, currentEvent.currentDate);
+    }, []);
+
+    const handleToggleDone = (exerciseId) => {
+        if (doneExercises && doneExercises.includes(exerciseId)) {
+            let newState = [...doneExercises];
+            newState = newState.filter(v => v !== exerciseId);
+            setDoneExercises(newState);
+            workoutUtil.markExercisesDone(
+                {
+                    workout: currentEvent.id,
+                    date: currentEvent.currentDate,
+                    removeDoneExercises: [exerciseId]
+                }
+            )
+        }
+        else {
+            let newState = [...doneExercises];
+            newState.push(exerciseId);
+            console.log(newState)
+            setDoneExercises(newState);
+            workoutUtil.markExercisesDone(
+                {
+                    workout: currentEvent.id,
+                    date: currentEvent.currentDate,
+                    addDoneExercises: [exerciseId]
+                }
+            )
+        }
+    }
+
+    return (
+        <List>
+            Exercises
+            {currentEvent.exercises.length ? currentEvent.exercises.map((exercise, key) => (
+                exercise &&
+                <Accordion key={key}>
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-label="Expand"
+                        aria-controls="additional-actions1-content"
+                        id="additional-actions1-header"
+                    >
+                        <FormControlLabel
+                            aria-label="Acknowledge"
+                            onClick={(event) => event.stopPropagation()}
+                            onFocus={(event) => event.stopPropagation()}
+                            control={
+                                <Checkbox
+                                    color='primary'
+                                    checked={doneExercises && doneExercises.includes(exercise._id)}
+                                    onClick={function () { handleToggleDone(exercise._id) }}
+                                />
+                            }
+                            label={exercise.name}
+                            className={(doneExercises && doneExercises.includes(exercise._id)) ? classes.doneTitle : undefined}
+                        />
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Typography color="textSecondary">
+                            {exercise.notes}
+                        </Typography>
+                    </AccordionDetails>
+                </Accordion>
+            )) : <ListItem><ListItemText primary="Add exercises to this workout to view them here"></ListItemText></ListItem>}
+
+        </List>
+    )
+}
+
 
 function Calendar(props) {
-    console.log(sessionStorage.getItem('calendar'))
     const classes = useStyles();
     const [readModal, toggleReadModal] = useState(false);
     const [editModal, toggleEditModal] = useState(false);
@@ -366,7 +434,9 @@ function Calendar(props) {
             currentDate: '',
             repeat: [],
             exercises: [],
-            occurenceText: ''
+            occurenceText: '',
+            isDone: false,
+            doneExercises: []
         });
     const [weekdayPicker, toggleWeekDayPicker] = useState(false);
     const [events, setEvents] = useState();
@@ -377,21 +447,22 @@ function Calendar(props) {
         var workouts = await workoutUtil.getAllWorkouts();
         var myEventsList = workouts.workouts.map(workout => {
             if (workout.weekly.length) {
-                console.log(workout.endDate)
                 return {
                     id: workout._id,
                     title: workout.name,
                     startRecur: moment(workout.startDate).utc().format('YYYY-MM-DD'),
                     endRecur: workout.endDate ? moment(workout.endDate).utc().format('YYYY-MM-DD') : undefined,
                     daysOfWeek: workout.weekly,
-                    exercises: workout.exercises
+                    exercises: workout.exercises,
+                    doneDates: workout.doneDates
                 }
             }
             return {
                 id: workout._id,
                 title: workout.name,
                 date: moment(workout.startDate).utc().format('YYYY-MM-DD'),
-                exercises: workout.exercises
+                exercises: workout.exercises,
+                doneDates: workout.doneDates
             };
         })
 
@@ -401,7 +472,7 @@ function Calendar(props) {
 
 
     useEffect(() => {
-        if(sessionStorage.getItem('addWorkout')) {
+        if (sessionStorage.getItem('addWorkout')) {
             handleAddOpen();
             sessionStorage.removeItem('addWorkout');
         }
@@ -423,7 +494,10 @@ function Calendar(props) {
         newState.endDate = currentWorkout.endRecur;
         newState.currentDate = date;
 
-        console.log(newState)
+        if (currentWorkout.doneDates.includes(moment.utc(date).toISOString()))
+            newState.isDone = true;
+
+        console.log(currentWorkout)
 
         if (newState.repeat) {
             toggleWeekDayPicker(true);
@@ -452,9 +526,7 @@ function Calendar(props) {
         }
 
         setCurrentEvent(newState);
-
         toggleReadModal(true);
-
     };
 
     const handleClose = () => {
@@ -472,7 +544,6 @@ function Calendar(props) {
     };
 
     const handleAddOpen = () => {
-        // console.log(currentEvent)
         setCurrentEvent({
             id: '',
             title: '',
@@ -597,6 +668,50 @@ function Calendar(props) {
         setTabValue(newValue);
     };
 
+    const getEventClassName = (event, el) => {
+        let currentWorkout = events.find(x => x.id === event.event._def.publicId);
+        let month = event.event._instance.range.end.getMonth() + 1;
+        let dayOfMonth = event.event._instance.range.end.getDate();
+        let year = event.event._instance.range.end.getFullYear();
+        let date = moment(year + " " + month + " " + dayOfMonth).format('YYYY-MM-DD');
+        if (currentWorkout.doneDates.includes(moment.utc(date).toISOString()))
+            return classes.eventDone;
+        else
+            return classes.events
+    }
+
+    const getEventContent = (event, el) => {
+        return {
+            html: '<h5>' + event.event._def.title + '</h5>'
+        }
+    }
+
+    const markDoneToggle = () => {
+        let newState = Object.assign({}, currentEvent);
+        newState.isDone = !newState.isDone;
+        setCurrentEvent(newState);
+        if (newState.isDone) {
+            workoutUtil.updateWorkout(currentEvent.id,
+                {
+                    addDoneDates: [currentEvent.currentDate]
+                }
+            ).then(res => {
+                handleClose();
+                window.location.reload(false);
+            })
+        }
+        else {
+            workoutUtil.updateWorkout(currentEvent.id,
+                {
+                    removeDoneDates: [currentEvent.currentDate]
+                }
+            ).then(res => {
+                handleClose();
+                window.location.reload(false);
+            })
+        }
+    }
+
     const DeleteAlert = () => {
         return (
             <div>
@@ -644,9 +759,6 @@ function Calendar(props) {
         )
     }
 
-
-
-
     return (
         <div className={props.dashboard ? undefined : classes.content}>
 
@@ -660,8 +772,9 @@ function Calendar(props) {
                         plugins={[dayGridPlugin]}
                         headerToolbar={false}
                         contentHeight={145}
-                        eventClassNames={classes.events}
                         events={events}
+                        eventClassNames={(event, el) => getEventClassName(event, el)}
+                        eventContent={(event, el) => getEventContent(event, el)}
                         eventClick={(event, el) => handleOpen(event, el)}
                     />
                     :
@@ -669,7 +782,8 @@ function Calendar(props) {
                         plugins={[dayGridPlugin]}
                         initialView="dayGridMonth"
                         events={events}
-                        eventClassNames={classes.events}
+                        eventClassNames={(event, el) => getEventClassName(event, el)}
+                        eventContent={(event, el) => getEventContent(event, el)}
                         eventClick={(event, el) => handleOpen(event, el)}
                         customButtons={{
                             myCustomButton: {
@@ -702,7 +816,12 @@ function Calendar(props) {
                         </IconButton>
                         <DeleteAlert />
                     </DialogContent>
-                    <DialogTitle id="form-dialog-title">{currentEvent.title}</DialogTitle>
+                    <DialogTitle 
+                        id="form-dialog-title"
+                        className={currentEvent.isDone ? classes.doneTitle : undefined}
+                    >
+                        {currentEvent.title}
+                    </DialogTitle>
                     <DialogContent>
                         <div style={{ display: 'flex', marginTop: -5 }}>
                             <AlarmIcon />
@@ -716,40 +835,14 @@ function Calendar(props) {
                                 {currentEvent.occurenceText ? currentEvent.occurenceText : "This workout does not repeat"}
                             </DialogContentText>
                         </div>
-                        <List>
-                            Exercises
-                            {currentEvent.exercises.length ? currentEvent.exercises.map((exercise, key) => (
-                            exercise &&
-                            <Accordion key={key}>
-                                <AccordionSummary
-                                    expandIcon={<ExpandMoreIcon />}
-                                    aria-label="Expand"
-                                    aria-controls="additional-actions1-content"
-                                    id="additional-actions1-header"
-                                >
-                                    <FormControlLabel
-                                        aria-label="Acknowledge"
-                                        onClick={(event) => event.stopPropagation()}
-                                        onFocus={(event) => event.stopPropagation()}
-                                        control={<Checkbox color='primary' />}
-                                        label={exercise.name}
-                                    />
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Typography color="textSecondary">
-                                        {exercise.notes}
-                                    </Typography>
-                                </AccordionDetails>
-                            </Accordion>
-                        )) : <ListItem><ListItemText primary="Add exercises to this workout to view them here"></ListItemText></ListItem>}
 
-                        </List>
+                        <ExerciseCheckList currentEvent={currentEvent} classes={classes} />
 
                     </DialogContent>
 
                     <DialogActions>
-                        <Button onClick={handleClose} color="primary" disabled={!moment(currentEvent.startDate).isSameOrBefore(moment())}>
-                            Mark as done
+                        <Button onClick={markDoneToggle} color="primary">
+                            {currentEvent.isDone ? "Unmark as done" : "Mark as done"}
                         </Button>
                     </DialogActions>
 
@@ -812,7 +905,7 @@ function Calendar(props) {
                                     shouldDisableDate={(date) => { return moment(date).isSameOrBefore(currentEvent.startDate) }}
                                     value={currentEvent.endDate ? moment(currentEvent.endDate).format("MMM D, YYYY") : null}
                                     onChange={handleEndDateChange}
-                                    style={{ marginTop: 15, width: 200, marginLeft: 50 }}
+                                    style={{ marginTop: 15, width: 140, marginLeft: 50 }}
                                     KeyboardButtonProps={{
                                         'aria-label': 'change date',
                                     }}

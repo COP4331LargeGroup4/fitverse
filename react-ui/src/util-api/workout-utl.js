@@ -109,7 +109,9 @@ export default class WorkoutUtil {
             startDate: object.startDate,
             endDate: object.endDate,
             notes: object.notes,
-            overwriteExercises: object.overwriteExercises
+            overwriteExercises: object.overwriteExercises,
+            addDoneDates: object.addDoneDates,
+            removeDoneDates: object.removeDoneDates
         };
         body = JSON.parse(JSON.stringify(body));
         var response = await axios.post("/api/workout/update", body, {
@@ -148,6 +150,42 @@ export default class WorkoutUtil {
             token: localStorage.getItem('jwt'),
             id: id
         }, {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            },
+            mode: 'cors'
+        })
+
+        return response.data;
+    }
+
+    markExercisesDone = async (object) => {
+        var body = {
+            token: localStorage.getItem('jwt'),
+            workout: object.workout,
+            date: object.date,
+            addDoneExercises: object.addDoneExercises,
+            removeDoneExercises: object.removeDoneExercises
+        };
+        body = JSON.parse(JSON.stringify(body));
+        var response = await axios.post("/api/workout/markExercisesDone", body, {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            },
+            mode: 'cors'
+        })
+
+        return response.data;
+    }
+
+    getDoneExercises = async (workoutId, date) => {
+        var body = {
+            token: localStorage.getItem('jwt'),
+            workout: workoutId,
+            date: date
+        };
+        body = JSON.parse(JSON.stringify(body));
+        var response = await axios.post("/api/workout/getDoneExercises", body, {
             headers: {
                 'Access-Control-Allow-Origin': '*',
             },
