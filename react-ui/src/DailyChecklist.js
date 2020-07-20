@@ -10,7 +10,6 @@ import {
   Checkbox,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import _ from 'underscore';
 import WorkoutUtil from './util-api/workout-utl'
 
 const workoutUtil = new WorkoutUtil();
@@ -45,7 +44,7 @@ export default function DailyChecklist() {
     initializeList();
   }, []);
 
-  const handleCheck = (value) => () => {      //HERE
+  const handleCheck = (value) => () => {      // HERE
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
 
@@ -66,34 +65,34 @@ export default function DailyChecklist() {
           workouts ? workouts.map(workout => (            // only if exists 
             <List>
               <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-                  {workout.name + "'s Exercises"}
+                  {"Exercises for " + workout.name}
               </Typography>
               {workout.exercises.map((exercise, key) => (
-                <Accordion key={key}>
-                <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-label="Expand"
-                    aria-controls="additional-actions1-content"
-                    id="additional-actions1-header"
-                >
-                    <FormControlLabel
-                        aria-label="Acknowledge"
-                        onClick={(event) => event.stopPropagation()}
-                        onFocus={(event) => event.stopPropagation()}
-                        control={<Checkbox color='primary' />} //<----
-                        label={exercise.name}
-                    />
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Typography color="textSecondary">
-                        {exercise.notes}
-                    </Typography>
-                </AccordionDetails>
-              </Accordion>
+                  <Accordion key={key}>
+                  <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-label="Expand"
+                      aria-controls="additional-actions1-content"
+                      id="additional-actions1-header"
+                  >
+                      <FormControlLabel
+                          aria-label="Acknowledge"
+                          onClick={(event) => event.stopPropagation()}
+                          onFocus={(event) => event.stopPropagation()}
+                          control={<Checkbox color='primary' />} //<----
+                          label={exercise.name}
+                      />
+                  </AccordionSummary>
+                  <AccordionDetails>
+                      <Typography color="textSecondary">
+                          {exercise.notes ? exercise.notes : "This exercise has no notes"}
+                      </Typography>
+                  </AccordionDetails>
+                </Accordion>
               ))}
             </List>
           ))
-          : <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+          :<Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
               {"No Exercises for Today"}
             </Typography>
         }
