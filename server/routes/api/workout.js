@@ -550,7 +550,7 @@ router.post('/getDoneExercises', async (req, res) => {
 // @desc Get a list of exercise IDs that are done for a workout on a certain date
 // @access  Public
 router.post('/getAllDoneExercisesOnDate', async (req, res) => {
-	const { token, workouts, date } = req.body;
+	const { token, date } = req.body;
 
 	httpErr = 500;
 	if (!token) {
@@ -565,22 +565,18 @@ router.post('/getAllDoneExercisesOnDate', async (req, res) => {
 				}
 			} else {
 				try {
-					if (!workouts || !date) {
+					if (!date) {
 						httpErr = 400
 						throw Error('Missing required felids');
 					}
 
-					var completedExercises = await CompletedExercises.findOne({ userId: authData._id, date: date });
+					var completedExercises = await CompletedExercises.find({ userId: authData._id, date: date });
 
 					if (!completedExercises) {
-						res.status(200).json({ doneExercises: [] });
-					}
-					else if (completedExercises.userId != authData._id) {
-						httpErr = 403;
-						throw Error('Invalid credentials');
+						res.status(200).json({ workouts: [] });
 					}
 					else {
-						res.status(200).json({ doneExercises: completedExercises });
+						res.status(200).json({ workouts: completedExercises });
 					}
 
 				} catch (e) {
