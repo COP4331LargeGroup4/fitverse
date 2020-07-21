@@ -1,5 +1,4 @@
 import React from 'react';
-import clsx from 'clsx';
 import {
   Box,
   Container,
@@ -29,7 +28,6 @@ function Copyright() {
 
 export function Dashboard() {
   const classes = useStyles();
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   return (
     <main className={classes.content}>
@@ -44,11 +42,10 @@ export function Dashboard() {
               <Calendar dashboard={true} />
             </Paper>
           </Grid>
-          {/* Exercise Checklist */}
           <Grid item xs={12} md={5} lg={6}>
             <Paper style={{ boxShadow: '3px 3px 10px 6px #a6a5a7', backgroundColor: '#D0CDD7', borderRadius: 8, padding: '5px 5px 20px 10px' }}>
               <Typography component="h3" variant="h6" color="inherit" noWrap className={classes.title}>
-                Today's Workout
+                Today's Workouts
               </Typography>
             <DailyChecklist />
             </Paper>
