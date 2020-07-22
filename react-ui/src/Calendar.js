@@ -240,7 +240,7 @@ function ExerciseTable(props) {
 export const AddWorkoutDialog = (props) => {
     const { currentEvent, setCurrentEvent, handleClose, addModal, classes,
         tabValue, handleTabChange, weekdayPicker, handleStartDateChange,
-        handleEndDateChange, DayPicker, handleAddWorkout, handleRepeatToggle } = props;
+        handleEndDateChange, DayPicker, handleAddWorkout, handleRepeatToggle, nameErrorText, dateErrorText } = props;
     return (
         <Dialog open={addModal} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth={true} maxWidth={'xs'}>
             <DialogContent style={{ marginBottom: -15 }}>
@@ -263,9 +263,10 @@ export const AddWorkoutDialog = (props) => {
                     autoFocus
                     margin="dense"
                     id="name"
-                    label="Workout Name"
+                    label="Workout name"
                     fullWidth
                     id="workout-name"
+                    error={nameErrorText}
                     required
                 />
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -284,6 +285,7 @@ export const AddWorkoutDialog = (props) => {
                             'aria-label': 'change date',
                         }}
                         id="start-date"
+                        error={dateErrorText}
                         autoOk
                         required
                     />
@@ -328,6 +330,12 @@ export const AddWorkoutDialog = (props) => {
             <div hidden={tabValue !== 1}>
                 <ExerciseTable workout={currentEvent} setWorkout={setCurrentEvent} />
             </div>
+
+            {(dateErrorText || nameErrorText) &&
+                <DialogContent style={{ color: 'red' }}>
+                    {nameErrorText ? nameErrorText : dateErrorText}
+                </DialogContent>
+            }
 
             <DialogActions>
                 <Button onClick={handleAddWorkout} color="primary">
@@ -384,7 +392,7 @@ function ExerciseCheckList(props) {
         <List>
             Exercises
             {currentEvent.exercises.length ? currentEvent.exercises.map((exercise, key) => (
-                exercise &&
+                // exercise &&
                 <Accordion key={key}>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon />}
@@ -442,6 +450,9 @@ function Calendar(props) {
     const [events, setEvents] = useState();
     const [tabValue, setTabValue] = useState(0);
     const [deleteOpen, setDeleteOpen] = useState(false);
+    const [dateErrorText, setDateErrorText] = useState("");
+    const [nameErrorText, setNameErrorText] = useState("");
+
 
     const getAllEvents = async () => {
         var workouts = await workoutUtil.getAllWorkouts();
@@ -534,6 +545,20 @@ function Calendar(props) {
         toggleEditModal(false);
         toggleAddModal(false);
         toggleWeekDayPicker(false);
+        setNameErrorText("");
+        setDateErrorText("");
+        setCurrentEvent({
+            id: '',
+            title: '',
+            startDate: '',
+            endDate: '',
+            currentDate: '',
+            repeat: [],
+            exercises: [],
+            occurenceText: '',
+            isDone: false,
+            doneExercises: []
+        })
     };
 
     const handleEditOpen = () => {
@@ -597,23 +622,44 @@ function Calendar(props) {
     };
 
     const handleUpdateWorkout = () => {
-        var startDate = document.getElementById('start-date').value
+        setNameErrorText("");
+        setDateErrorText("");
+        var startDate = document.getElementById('start-date').value;
+        var name = document.getElementById('workout-name').value
         var endDate = "";
+
         if (weekdayPicker)
             endDate = document.getElementById('end-date').value
+
         var exercises = currentEvent.exercises.map(exercise => {
             return exercise._id;
         })
+
+        if (!startDate && !name) {
+            setNameErrorText("Missing required fields");
+            return;
+        }
+        else if (!startDate) {
+            setDateErrorText("Please provide a date");
+            return;
+        }
+        else if (!name) {
+            setNameErrorText("Please provide a workout name");
+            return;
+        }
+
+
         console.log({
-            name: document.getElementById('workout-name').value,
+            name: name,
             startDate: startDate,
             endDate: endDate ? endDate : "",
             weekly: weekdayPicker ? currentEvent.repeat : [],
             overwriteExercises: exercises
         })
+
         workoutUtil.updateWorkout(currentEvent.id,
             {
-                name: document.getElementById('workout-name').value,
+                name: name,
                 startDate: startDate,
                 endDate: endDate ? endDate : "",
                 weekly: weekdayPicker ? currentEvent.repeat : [],
@@ -627,15 +673,34 @@ function Calendar(props) {
     }
 
     const handleAddWorkout = () => {
-        var startDate = document.getElementById('start-date').value
+        setNameErrorText("");
+        setDateErrorText("");
+        var startDate = document.getElementById('start-date').value;
+        var name = document.getElementById('workout-name').value
         var endDate = "";
+
         if (weekdayPicker)
             endDate = document.getElementById('end-date').value
+
         var exercises = currentEvent.exercises.map(exercise => {
             return exercise._id;
         })
+
+        if (!startDate && !name) {
+            setNameErrorText("Missing required fields");
+            return;
+        }
+        else if (!startDate) {
+            setDateErrorText("Please provide a date");
+            return;
+        }
+        else if (!name) {
+            setNameErrorText("Please provide a workout name");
+            return;
+        }
+
         console.log({
-            name: document.getElementById('workout-name').value,
+            name: name,
             startDate: startDate,
             endDate: endDate ? endDate : "",
             weekly: weekdayPicker ? currentEvent.repeat : [],
@@ -643,7 +708,7 @@ function Calendar(props) {
         })
         workoutUtil.addWorkout(
             {
-                name: document.getElementById('workout-name').value,
+                name: name,
                 startDate: startDate,
                 endDate: endDate ? endDate : "",
                 weekly: weekdayPicker ? currentEvent.repeat : [],
@@ -816,7 +881,7 @@ function Calendar(props) {
                         </IconButton>
                         <DeleteAlert />
                     </DialogContent>
-                    <DialogTitle 
+                    <DialogTitle
                         id="form-dialog-title"
                         className={currentEvent.isDone ? classes.doneTitle : undefined}
                     >
@@ -869,11 +934,12 @@ function Calendar(props) {
                         <TextField
                             margin="dense"
                             id="name"
-                            label="Workout Name"
+                            label="Workout name"
                             fullWidth
                             id="workout-name"
                             defaultValue={currentEvent.title}
                             required
+                            error={nameErrorText}
                         />
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
@@ -944,6 +1010,12 @@ function Calendar(props) {
                         <ExerciseTable workout={currentEvent} setWorkout={setCurrentEvent} />
                     </div>
 
+                    {(dateErrorText || nameErrorText) &&
+                        <DialogContent style={{ color: 'red' }}>
+                            {nameErrorText ? nameErrorText : dateErrorText}
+                        </DialogContent>
+                    }
+
                     <DialogActions>
                         <Button onClick={handleUpdateWorkout} color="primary">
                             Save
@@ -966,6 +1038,8 @@ function Calendar(props) {
                     DayPicker={DayPicker}
                     handleAddWorkout={handleAddWorkout}
                     handleRepeatToggle={handleRepeatToggle}
+                    nameErrorText={nameErrorText}
+                    dateErrorText={dateErrorText}
                 />
 
             </Container>
