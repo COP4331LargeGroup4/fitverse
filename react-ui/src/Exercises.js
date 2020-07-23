@@ -58,6 +58,7 @@ function Row(props) {
     const classes = useStyles();
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [exerciseEditOpen, setExerciseEditOpen] = useState(false);
+    const [nameErrorText, setNameErrorText] = useState("");
 
     const handleExerciseEditOpen = () => {
         setExerciseEditOpen(true);
@@ -65,6 +66,7 @@ function Row(props) {
 
     const handleExerciseEditClose = () => {
         setExerciseEditOpen(false);
+        setNameErrorText("");
     };
 
     const handleDeleteOpen = () => {
@@ -83,9 +85,17 @@ function Row(props) {
     }
 
     const updateExercise = (id) => {
+        setNameErrorText("");
+        var name = document.getElementById('edit-exercise-name').value;
+
+        if (!name) {
+            setNameErrorText('Please provide a name for your exercise');
+            return;
+        }
+
         workoutUtil.updateExercise(id,
             {
-                name: document.getElementById('edit-exercise-name').value,
+                name: name,
                 notes: document.getElementById('edit-exercise-notes').value
             }
         ).then(res => {
@@ -113,8 +123,9 @@ function Row(props) {
                         fullWidth
                         type="name"
                         id="edit-exercise-name"
-                        defaultValue={exercise.name}
+                        defaultValue={!nameErrorText ? exercise.name : undefined}
                         label="Exercise name"
+                        error={nameErrorText}
                         style={{ marginBottom: 10 }}
                     />
                     <TextField
@@ -130,6 +141,13 @@ function Row(props) {
                         rows={4}
                     />
                 </DialogContent>
+
+                {nameErrorText &&
+                    <DialogContent style={{ color: 'red' }}>
+                        {nameErrorText}
+                    </DialogContent>
+                }
+
                 <DialogActions>
                     <Button onClick={function () { updateExercise(exercise.id) }} color="primary">
                         Save
@@ -213,29 +231,35 @@ function Exercises() {
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('calories');
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [exercises, setExercises] = useState();
     const [exerciseAddOpen, setExerciseAddOpen] = useState(false);
+    const [nameErrorText, setNameErrorText] = useState("");
+    const [allExercises, setAllExercises] = useState();
+    const [searchValue, setSearchValue] = useState("");
 
     const handleExerciseOpen = () => {
         setExerciseAddOpen(true);
     };
     const handleExerciseClose = () => {
         setExerciseAddOpen(false);
+        setNameErrorText("");
     };
 
 
     const getAllRows = () => {
         workoutUtil.getAllExercises()
             .then(response => {
-                setExercises(response.exercises.map(exercise => {
+                let exercises = response.exercises.map(exercise => {
                     return {
                         id: exercise._id,
                         name: exercise.name,
                         date: moment(exercise.dateCreated).format('YYYY-MM-DD'),
                         notes: exercise.notes
                     }
-                }))
+                })
+                setExercises(exercises);
+                setAllExercises(exercises)
             })
     }
 
@@ -298,15 +322,36 @@ function Exercises() {
     }
 
     const createExercise = () => {
+        setNameErrorText("");
+        var name = document.getElementById('new-exercise-name').value;
+
+        if (!name) {
+            setNameErrorText("Please provide a name for your exercise");
+            return
+        }
+
         workoutUtil.createExercise(
             {
-                name: document.getElementById('new-exercise-name').value,
+                name: name,
                 notes: document.getElementById('new-exercise-notes').value
             }
         ).then(res => {
             handleExerciseClose();
             window.location.reload(false);
         })
+    }
+
+    const searchExercises = (searchValue) => {
+        if (searchValue) {
+            var results = allExercises.filter(function (exercise) {
+                return exercise.name.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0;
+            });
+
+            setExercises(results);
+        }
+        else {
+            setExercises(allExercises);
+        }
     }
 
     const AddExerciseDialog = () => {
@@ -329,6 +374,7 @@ function Exercises() {
                         type="name"
                         id="new-exercise-name"
                         label="Exercise name"
+                        error={nameErrorText}
                         style={{ marginBottom: 10 }}
                     />
                     <TextField
@@ -341,10 +387,15 @@ function Exercises() {
                         label="Notes"
                         multiline
                         rows={4}
-                    // value={newNotes}
-                    // onChange={handleNewNotes}
                     />
                 </DialogContent>
+
+                {nameErrorText &&
+                    <DialogContent style={{ color: 'red' }}>
+                        {nameErrorText}
+                    </DialogContent>
+                }
+
                 <DialogActions>
                     <Button onClick={createExercise} color="primary">
                         Add Exercise
@@ -368,12 +419,12 @@ function Exercises() {
                                 label="Search exercises"
                                 id="outlined-margin-dense"
                                 margin="dense"
-                                // size="small"
                                 variant="outlined"
+                                onChange={(event, value) => searchExercises(event.target.value)}
                                 InputProps={{
-                                    endAdornment: (<IconButton type="submit" className={classes.iconButton} aria-label="search" style={{ padding: 5 }}>
+                                    endAdornment: (
                                         <SearchIcon />
-                                    </IconButton>)
+                                    )
                                 }}
                             />
                         </Typography>
