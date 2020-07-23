@@ -195,5 +195,19 @@ export default class WorkoutUtil {
         return response.data;
     }
 
+    getAllWorkoutsInRange = async (object) => {
+        var response = await axios.post("/api/workout/readAllDateRange", {
+            token: localStorage.getItem('jwt'),
+            startDate: object.startDate,
+            endDate: object.endDate
+        }, {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            },
+            mode: 'cors'
+        })
+
+        return response.data;
+    }
 
 }

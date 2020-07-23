@@ -3,11 +3,9 @@ import React, { Component } from 'react'
 import {
     Button,
     Container,
-    Divider,
     Grid,
     Header,
     Icon,
-    Image,
     List,
     Menu,
     Responsive,
@@ -34,22 +32,11 @@ const getWidth = () => {
  */
 const HomepageHeading = ({ mobile }) => (
     <Container text>
-        {/*<Header
-            as='h1'
-            //content='Fitverse'
-            inverted
-            style={{
-                fontSize: mobile ? '2em' : '4em',
-                fontWeight: 'normal',
-                marginBottom: 0,
-                marginTop: mobile ? '1.5em' : '3em',
-            }}
-        />*/}
         <NavLink exact to="/">
             <Img src={Logo} 
             style={{ 
                 maxWidth: "100%",
-                marginTop: mobile ? '1.5em' : '4em',
+                marginTop: mobile ? '3em' : '4.5em',
             }} />
 		</NavLink>
         <Header
@@ -60,6 +47,7 @@ const HomepageHeading = ({ mobile }) => (
                 fontSize: mobile ? '1.5em' : '1.7em',
                 fontWeight: 'normal',
                 marginTop: mobile ? '0.5em' : '1.5em',
+                color: "#0B3948",
             }}
         />
         <Button primary size='huge' as={NavLink} exact to="/signup" style={{backgroundColor: '#416164'}}>
@@ -97,7 +85,7 @@ class DesktopContainer extends Component {
                     <Segment
                         inverted
                         textAlign='center'
-                        style={{ minHeight: 700, padding: '1em 0em', backgroundColor: '#D9DBF1'}} //light purple at top
+                        style={{ minHeight: 700, padding: '0em 0em', backgroundColor: '#D9DBF1'}} //on full-size page: bar touching top now
                         vertical
                     >
                         <Menu
@@ -106,11 +94,12 @@ class DesktopContainer extends Component {
                             pointing={!fixed}
                             secondary={!fixed}
                             size='large'
+                            style={{backgroundColor: '#416165'}}
                         >
                             <Container>
                                 <Menu.Item position='right'>
-                                    <Button inverted={!fixed} as={NavLink} exact to="/signin">Log In</Button>
-                                    <Button inverted={!fixed} as={NavLink} exact to="/signup" primary={fixed} style={{ marginLeft: '0.5em'}}>
+                                    <Button inverted={!fixed} as={NavLink} exact to="/signin"  >Sign In</Button>
+                                    <Button inverted={!fixed} as={NavLink} exact to="/signup"  style={{marginLeft: '0.5em'}}>
                                         Sign Up
                                     </Button>
                                 </Menu.Item>
@@ -158,11 +147,11 @@ class MobileContainer extends Component {
                     visible={sidebarOpened}
                     style = {{backgroundColor: "#416165"}}
                 >
-                    <Menu.Item as={NavLink} exact to="/signin">Log In</Menu.Item>
+                    <Menu.Item as={NavLink} exact to="/signin">Sign In</Menu.Item>
                     <Menu.Item as={NavLink} exact to="/signup">Sign Up</Menu.Item>
                 </Sidebar>
 
-                <Sidebar.Pusher dimmed={sidebarOpened}> {/* when page is shrunk */}
+                <Sidebar.Pusher dimmed={sidebarOpened}>
                     <Segment
                         inverted
                         textAlign='center'
@@ -170,15 +159,15 @@ class MobileContainer extends Component {
                         style={{ minHeight: 500, padding: '1em 0em', backgroundColor: '#D9DBF1'}} 
                     >
                         <Container>
-                            <Menu inverted pointing secondary size='large'>
+                            <Menu inverted pointing secondary size='large' style={{backgroundColor: '#416165'}}> {/*Small resize*/}
                                 <Menu.Item onClick={this.handleToggle}>
                                     <Icon name='sidebar' />
                                 </Menu.Item>
                                 <Menu.Item position='right'>
-                                    <Button as={NavLink} exact to="/signin" inverted>
-                                        Log In
+                                    <Button inverted as={NavLink} exact to="/signin" >
+                                        Sign In
                                     </Button>
-                                    <Button as={NavLink} exact to="/signup" inverted style={{ marginLeft: '0.5em'}}>
+                                    <Button inverted as={NavLink} exact to="/signup" style={{marginLeft: '0.5em'}}>
                                         Sign Up
                                     </Button>
                                 </Menu.Item>
@@ -222,15 +211,7 @@ export const HomepageLayout = () => (
                             All of our exercises and workouts are fully customizable! 
                             You can even include your specific goals for each workout.
                             With our calendar feature, you can view the workouts you've planned up to months in advance.
-                            
                         </p>
-                        {/*<Header as='h3' style={{ fontSize: '2em' }}>
-                            We Make Bananas That Can Dance
-                        </Header>
-                        <p style={{ fontSize: '1.33em' }}>
-                            Yes that's right, you thought it was the stuff of dreams, but even bananas can be
-                            bioengineered.
-                        </p>*/}
                 </Grid.Row>
             </Grid>
         </Segment>
@@ -269,23 +250,6 @@ export const HomepageLayout = () => (
                         <List.Item >Customizable workouts made up of your exercises</List.Item>
                     </List>
                 </p>
-
-                {/*<Divider
-                    as='h4'
-                    className='header'
-                    horizontal
-                    style={{ margin: '3em 0em', textTransform: 'uppercase' }}
-                >
-                </Divider>
-
-                <Header as='h3' style={{ fontSize: '2em' }}>
-                    Did We Tell You About Our Bananas?
-                </Header>
-                <p style={{ fontSize: '1.33em' }}>
-                    Yes I know you probably disregarded the earlier boasts as non-sequitur filler content, but
-                    it's really true. It took years of gene splicing and combinatory DNA research, but our
-                    bananas can really dance.
-                    </p>*/}
             </Container>
         </Segment>
 
