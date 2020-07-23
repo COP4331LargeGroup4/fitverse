@@ -30,7 +30,7 @@ function ExerciseChecklist(props){
   
   const getExercisesDone = async (workoutId, date) => {
     var doneExercises = await workoutUtil.getDoneExercises(workoutId, date);
-    console.log(doneExercises);
+    // console.log(doneExercises);
 
     setDoneExercises(doneExercises.doneExercises);
 }
@@ -51,19 +51,18 @@ const handleToggleDone = (exerciseId) => {
   else {
       let newState = [...doneExercises];
       newState.push(exerciseId);
-      console.log({
-        workout: workout._id,
-        date: currentDate,
-        addDoneExercises: [exerciseId]
-    })
+    //   console.log({
+    //     workout: workout._id,
+    //     date: currentDate,
+    //     addDoneExercises: [exerciseId]
+    // })
       setDoneExercises(newState);
       workoutUtil.markExercisesDone(
-          {
-              workout: workout._id,
-              date: currentDate,
-              addDoneExercises: [exerciseId]
-          }
-      )
+      {
+          workout: workout._id,
+          date: currentDate,
+          addDoneExercises: [exerciseId]
+      })
   }
 }
 
@@ -105,8 +104,9 @@ useEffect(() => {
                       </Typography>
                   </AccordionDetails>
                 </Accordion>
-              ))}
-            </List>
+              ))
+            }
+      </List>
   );
 }
 
@@ -131,16 +131,13 @@ export default function DailyChecklist() {
     initializeList();
   }, []);
 
-
-
-
   return (
     <div>
         {
           workouts ? workouts.map(workout => (            // only if exists 
             <ExerciseChecklist workout={ workout } classes={classes}/>
           ))
-          :<Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+          : <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
               {"No Exercises for Today"}
             </Typography>
         }
