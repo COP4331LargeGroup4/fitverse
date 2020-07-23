@@ -67,8 +67,7 @@ function Profile() {
                                         email: JSON.parse(localStorage.getItem('user')).email,
                                     }
                                 ));
-                                //alert(response.data);
-                                //window.location.reload(false);
+                                window.location.reload(false);
                             }
                         })
                         .catch(function (err) {
@@ -120,20 +119,6 @@ function Profile() {
                                         disabled
 									/>
 								</Grid>
-                                {/*<Grid item xs={12}>
-									<Field
-										component={TextField}
-										name="notes"
-										type="notes"
-										label="Notes"
-										fullWidth
-										variant="outlined"
-										margin="dense"
-                                        disabled={isSubmitting}
-                                        multiline
-                                        rows={4} 
-                                </Grid> 
-                                />*/}
                                 <Grid item xs={12}>
                                     <Button
                                         fullWidth
