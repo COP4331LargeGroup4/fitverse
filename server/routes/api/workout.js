@@ -257,8 +257,8 @@ router.post('/readAllDateRange', async (req, res) => {
 					// Cursed Code don't touch don't replicate
 					var retWorkouts =
 						workouts.map((workout) => {
-							// if workout doesn't contain the days of the week then we wont return the workout
-							if (_.intersection(workout.weekly, weekly).length == 0)
+							// if workout doesn't contain the days of the week then we wont return the workout (and the workout is a repeating workout)
+							if (_.intersection(workout.weekly, weekly).length == 0 && workout.weekly.length != 0)
 								return;
 
 							var retWorkout = {
