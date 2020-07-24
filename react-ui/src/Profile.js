@@ -67,8 +67,7 @@ function Profile() {
                                         email: JSON.parse(localStorage.getItem('user')).email,
                                     }
                                 ));
-                                //alert(response.data);
-                                //window.location.reload(false);
+                                window.location.reload(false);
                             }
                         })
                         .catch(function (err) {
@@ -120,20 +119,6 @@ function Profile() {
                                         disabled
 									/>
 								</Grid>
-                                {/*<Grid item xs={12}>
-									<Field
-										component={TextField}
-										name="notes"
-										type="notes"
-										label="Notes"
-										fullWidth
-										variant="outlined"
-										margin="dense"
-                                        disabled={isSubmitting}
-                                        multiline
-                                        rows={4} 
-                                </Grid> 
-                                />*/}
                                 <Grid item xs={12}>
                                     <Button
                                         fullWidth
@@ -167,7 +152,7 @@ function Profile() {
     
 	return (
 		<div style={{ height: '100vh', paddingTop: 48, alignItems: 'center', width:"100%" }}>
-			<Container component="main" maxWidth="xs" justify="center" style={{ backgroundColor: '#D9DBF1', padding: 20, borderRadius: 24, marginTop: 48, border: '3px solid #ACB0BD' }}>
+			<Container component="main" maxWidth="xs" justify="center" style={{ backgroundColor: '#D9DBF1', padding: 20, borderRadius: 24, marginTop: 48, boxShadow: '3px 3px 10px 6px #ccc' }}>
 				<CssBaseline />
 				<div className={ classes.paper } style={{ backgroundColor: '#D9DBF1'}}>
 					{success == null ? <Form /> : <Success />}

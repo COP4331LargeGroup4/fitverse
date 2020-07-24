@@ -409,7 +409,7 @@ function Exercises() {
         <div className={classes.content}>
             <div className={classes.appBarSpacer} />
             <Container maxWidth="lg" className={classes.container}>
-                <Paper style={{ maxWidth: 600, margin: '0px auto', boxShadow: '3px 3px 10px 6px #ccc' }}>
+                <Paper style={{ maxWidth: 600, margin: '0px auto', boxShadow: '3px 3px 10px 6px #ccc', backgroundColor: '#D9DBF1'}}>
 
                     <Toolbar
                         className={classes.root}
