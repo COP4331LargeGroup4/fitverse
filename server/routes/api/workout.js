@@ -240,7 +240,9 @@ router.post('/readAllDateRange', async (req, res) => {
 										{ weekly: { $eq: [] } },
 										{ startDate: { $lte: new Date(endDate) } },
 										{ startDate: { $gte: new Date(startDate) } }
-									],
+									]
+								},
+								{
 									$and: [
 										{ weekly: { $ne: [] } },
 										{ startDate: { $lte: new Date(endDate) } },
