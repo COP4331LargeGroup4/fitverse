@@ -234,10 +234,24 @@ router.post('/readAllDateRange', async (req, res) => {
 					const workouts =
 						await Workout.find({
 							userId: authData._id,
-							startDate: { $lte: new Date(endDate) },
 							$or: [
-								{ endDate: { $eq: undefined } },
-								{ endDate: { $gte: new Date(startDate) } }
+								{
+									$and: [
+										{ weekly: { $eq: [] } },
+										{ startDate: { $lte: new Date(endDate) } },
+										{ startDate: { $gte: new Date(startDate) } }
+									],
+									$and: [
+										{ weekly: { $ne: [] } },
+										{ startDate: { $lte: new Date(endDate) } },
+										{
+											$or: [
+												{ endDate: { $eq: undefined } },
+												{ endDate: { $gte: new Date(startDate) } }
+											]
+										}
+									]
+								}
 							]
 						});
 
