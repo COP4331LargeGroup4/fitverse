@@ -182,7 +182,6 @@ export function ResetPassword() {
 									mode: 'cors',
 								})
 							.then(function (response) {
-								alert(JSON.stringify(response.data));
 								setSubmitting(false);
 								setSent(true);
 							})
@@ -266,7 +265,6 @@ export function ResetPassword() {
 									mode: 'cors',
 								})
 							.then(function (response) {
-								alert(JSON.stringify(response.data));
 								setSubmitting(false);
 								setSent(true);
 							})
