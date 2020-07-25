@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
 
 export function VerifyEmail() {
 	const classes = useStyles();
-	const [success, setSuccess] = useState(getAnchor() == 'success' ? true : false);
+	const [success, setSuccess] = useState(getAnchor() === 'success' ? true : false);
 
 	const token = new URLSearchParams(window.location.search).get('token');
 

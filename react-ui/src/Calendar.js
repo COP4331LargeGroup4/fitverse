@@ -1,5 +1,4 @@
 import 'date-fns';
-import PropTypes from 'prop-types'
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -24,16 +23,12 @@ import {
     Typography,
     Tabs,
     Tab,
-    Input,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TablePagination,
     TableRow,
-    TableSortLabel,
-    Toolbar,
     Paper,
     Tooltip
 } from '@material-ui/core';
@@ -44,13 +39,6 @@ import CloseIcon from '@material-ui/icons/Close';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import AlarmIcon from '@material-ui/icons/Alarm';
 import ClearIcon from '@material-ui/icons/Clear';
-import CheckIcon from '@material-ui/icons/Check';
-import ImportExportIcon from '@material-ui/icons/ImportExport';
-import ArrowDownward from "@material-ui/icons/ArrowDownward";
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
-import FirstPageIcon from '@material-ui/icons/FirstPage';
-import LastPageIcon from '@material-ui/icons/LastPage';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -63,8 +51,6 @@ import {
 } from '@material-ui/pickers';
 import { ToggleButton, ToggleButtonGroup, Autocomplete } from '@material-ui/lab'
 import WorkoutUtil from './util-api/workout-utl'
-import MaterialTable, { MTableToolbar, MTablePagination, MTableCell } from 'material-table';
-import _ from 'underscore';
 
 const workoutUtil = new WorkoutUtil();
 
@@ -158,19 +144,12 @@ function ExerciseTable(props) {
 
     const rowClasses = useRowStyles();
 
-
-    const headCells = [
-        { id: 'name', numeric: false, disablePadding: true, sortable: true, label: 'Exercise' },
-        { id: 'actions', numeric: true, disablePadding: false, sortable: false, label: '' }
-    ];
-
     const [rows, setRows] = useState(props.workout.exercises);
 
     const addRow = () => {
         console.log(rows)
         const newData = [...rows];
         newData.push({});
-        // console.log(newData)
         setRows(newData);
         let newState = Object.assign({}, props.workout);
         newState.exercises = newData;
@@ -262,7 +241,6 @@ export const AddWorkoutDialog = (props) => {
                 <TextField
                     autoFocus
                     margin="dense"
-                    id="name"
                     label="Workout name"
                     fullWidth
                     id="workout-name"
@@ -276,8 +254,6 @@ export const AddWorkoutDialog = (props) => {
                         format="MMM d, yyy"
                         margin="normal"
                         label={weekdayPicker ? "Start date" : "Date"}
-                        disablePast
-                        // defaultValue={null}
                         value={currentEvent.startDate ? moment(currentEvent.startDate).format("MMM D, YYYY") : null}
                         onChange={handleStartDateChange}
                         style={{ marginTop: 15, width: 140 }}
@@ -559,6 +535,7 @@ function Calendar(props) {
             isDone: false,
             doneExercises: []
         })
+        setTabValue(0);
     };
 
     const handleEditOpen = () => {
@@ -933,7 +910,6 @@ function Calendar(props) {
                     <DialogContent hidden={tabValue !== 0}>
                         <TextField
                             margin="dense"
-                            id="name"
                             label="Workout name"
                             fullWidth
                             id="workout-name"
