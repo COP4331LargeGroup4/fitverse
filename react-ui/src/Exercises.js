@@ -236,7 +236,6 @@ function Exercises() {
     const [exerciseAddOpen, setExerciseAddOpen] = useState(false);
     const [nameErrorText, setNameErrorText] = useState("");
     const [allExercises, setAllExercises] = useState();
-    const [searchValue, setSearchValue] = useState("");
 
     const handleExerciseOpen = () => {
         setExerciseAddOpen(true);
