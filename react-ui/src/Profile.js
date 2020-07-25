@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useStyles } from './Navigation'
-import FaceIcon from '@material-ui/icons/Face';
 import { mdiAccountCowboyHat } from '@mdi/js';
 import Icon from '@mdi/react'
 import {
@@ -16,15 +15,8 @@ import { TextField } from 'formik-material-ui';
 import * as Yup from 'yup';
 import axios from 'axios';
 
-function getAnchor() {
-	var url = window.location
-	url = url.toString().split('#');
-	return (url.length > 1) ? url[1] : null;
-}
-
 function Profile() {
     const classes = useStyles();
-    const [success, setSuccess] = useState(getAnchor());
     
     function Form(){
         return (
@@ -68,7 +60,7 @@ function Profile() {
                                     }
                                 ));
                                 window.location.reload(false);
-                            }
+							}
                         })
                         .catch(function (err) {
                             console.log(err);
@@ -140,22 +132,12 @@ function Profile() {
         )
     }
 
-    function Success() {
-		return (
-			<>
-			<Typography component="h1" variant="h5" style={{ marginTop: 20 }}>
-				update successful
-			</Typography>
-			</>
-		)
-	}
-    
 	return (
 		<div style={{ height: '100vh', paddingTop: 48, alignItems: 'center', width:"100%" }}>
 			<Container component="main" maxWidth="xs" justify="center" style={{ backgroundColor: '#D9DBF1', padding: 20, borderRadius: 24, marginTop: 48, boxShadow: '3px 3px 10px 6px #ccc' }}>
 				<CssBaseline />
 				<div className={ classes.paper } style={{ backgroundColor: '#D9DBF1'}}>
-					{success == null ? <Form /> : <Success />}
+					{<Form />}
 				</div>
 			</Container>
 		</div>
