@@ -22,7 +22,7 @@ function InteriorLayout(props) {
 	}
 
 	return (
-		<div style={{ display: 'flex' }}>
+		<div  data-testid="body" style={{ display: 'flex' }}>
 			<Navigation title={props.content.title} />
 			{props.content.page}
 		</div>

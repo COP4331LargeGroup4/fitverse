@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
 
 export function VerifyEmail() {
 	const classes = useStyles();
-	const [success, setSuccess] = useState(getAnchor() == 'success' ? true : false);
+	const [success, setSuccess] = useState(getAnchor() === 'success' ? true : false);
 
 	const token = new URLSearchParams(window.location.search).get('token');
 
@@ -182,7 +182,6 @@ export function ResetPassword() {
 									mode: 'cors',
 								})
 							.then(function (response) {
-								alert(JSON.stringify(response.data));
 								setSubmitting(false);
 								setSent(true);
 							})
@@ -266,7 +265,6 @@ export function ResetPassword() {
 									mode: 'cors',
 								})
 							.then(function (response) {
-								alert(JSON.stringify(response.data));
 								setSubmitting(false);
 								setSent(true);
 							})
