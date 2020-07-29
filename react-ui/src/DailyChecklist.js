@@ -113,7 +113,7 @@ useEffect(() => {
 export default function DailyChecklist() {
   const classes = useStyles();
   const [workouts, setWorkouts] = useState();
-  var currentDate = new Date();
+  var currentDate = moment().format("YYYY-MM-DD");
 
   const initializeList = async () => {
       var workouts = await workoutUtil.getAllWorkoutsInRange(
