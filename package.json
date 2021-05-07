@@ -23,7 +23,7 @@
     "moment": "^2.27.0",
     "mongoose": "^5.9.22",
     "nodemailer": "^6.4.10",
-    "underscore": "^1.10.2"
+    "underscore": "^1.12.1"
   },
   "repository": {
     "type": "git",
